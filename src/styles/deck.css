@@ -1,0 +1,401 @@
+/* ═══════ Deck shell ═══════ */
+
+.deck {
+  position: relative;
+  height: 100%;
+  background: var(--table);
+  color: var(--ink);
+}
+
+.skip {
+  position: absolute;
+  left: 12px;
+  top: -80px;
+  z-index: 60;
+  padding: 10px 14px;
+  background: var(--raised);
+  color: var(--ink);
+  border: 1px solid var(--line-strong);
+  text-decoration: none;
+}
+.skip:focus {
+  top: 12px;
+}
+
+.stage {
+  position: absolute;
+  inset: 0;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.42s var(--ease),
+    visibility 0s linear 0.45s;
+}
+.slide[data-state='active'] {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity 0.5s var(--ease) 0.05s,
+    visibility 0s;
+}
+
+/* Canvas mode: every slide is a 1920×1080 composition scaled to the viewport. */
+.deck--canvas .canvas {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1920px;
+  height: 1080px;
+  transform-origin: center center;
+}
+.deck--canvas .slide .slide-body {
+  transition: transform 0.6s var(--ease-out);
+}
+.deck--canvas[data-dir='1'] .slide[data-state='future'] .slide-body,
+.deck--canvas[data-dir='-1'] .slide[data-state='past'] .slide-body {
+  transform: translateY(24px);
+}
+.deck--canvas[data-dir='1'] .slide[data-state='past'] .slide-body,
+.deck--canvas[data-dir='-1'] .slide[data-state='future'] .slide-body {
+  transform: translateY(-24px);
+}
+
+/* ═══════ Bottom bar ═══════ */
+
+.bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 clamp(12px, 2vw, 28px);
+  background: #0b0d12;
+  border-top: 1px solid #1d2430;
+  color: #f4f5f7;
+}
+.progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -1px;
+  height: 2px;
+  background: transparent;
+}
+.progress span {
+  display: block;
+  height: 100%;
+  background: #ef7777;
+  transform-origin: left;
+  transition: transform 0.6s var(--ease-out);
+}
+.bar-where {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  min-width: 0;
+}
+.bar-n {
+  font-family: var(--f-mono);
+  font-size: 15px;
+  font-weight: 700;
+}
+.bar-n span {
+  color: #8a93a3;
+  font-weight: 400;
+}
+.bar-title {
+  font-size: 14px;
+  color: #a9b1be;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bar-step {
+  margin-left: auto;
+  font-family: var(--f-mono);
+  font-size: 13px;
+  color: #f3bd69;
+  white-space: nowrap;
+}
+.bar-step-k {
+  color: #8a93a3;
+}
+.bar-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.bar-step + .bar-actions {
+  margin-left: 16px;
+}
+.bar-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 44px;
+  height: 44px;
+  padding: 0 10px;
+  border: 1px solid #262e3b;
+  border-radius: 4px;
+  background: #11151d;
+  color: #d9dde4;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background 0.18s,
+    border-color 0.18s,
+    transform 0.18s var(--ease-out);
+}
+.bar-btn svg {
+  width: 18px;
+  height: 18px;
+}
+.bar-btn:hover:not(:disabled) {
+  background: #171d28;
+  border-color: #3b4657;
+  color: #fff;
+}
+.bar-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.bar-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.bar-btn--text {
+  padding: 0 14px;
+}
+.bar-btn--next {
+  padding: 0 12px 0 16px;
+  background: #f4f5f7;
+  border-color: #f4f5f7;
+  color: #0b0d12;
+}
+.bar-btn--next:hover:not(:disabled) {
+  background: #fff;
+  color: #0b0d12;
+}
+
+/* ═══════ Overview ═══════ */
+
+.overview {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  overflow-y: auto;
+  background: rgb(5 6 8 / 0.94);
+  animation: fade 0.22s var(--ease) both;
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+.overview-inner {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 28px clamp(16px, 4vw, 40px) 48px;
+}
+.overview-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  color: #f4f5f7;
+}
+.overview-head h2 {
+  font-family: var(--f-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-right: auto;
+}
+.overview-keys {
+  font-size: 13px;
+  color: #8a93a3;
+}
+kbd {
+  display: inline-block;
+  min-width: 1.6em;
+  padding: 1px 5px;
+  font-size: 12px;
+  text-align: center;
+  border: 1px solid #3b4657;
+  border-bottom-width: 2px;
+  border-radius: 3px;
+  background: #11151d;
+}
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.ov-tile {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 14px 16px;
+  text-align: left;
+  border: 1px solid #3b4657;
+  outline: 1px solid transparent;
+  border-radius: 2px;
+  cursor: pointer;
+  transition:
+    transform 0.2s var(--ease-out),
+    outline-color 0.2s;
+}
+.ov-tile {
+  background: #11151d;
+  color: #f4f5f7;
+}
+.ov-refs {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid #232b38;
+  color: #f4f5f7;
+  font-size: 18px;
+}
+.ov-tile:hover {
+  transform: translateY(-2px);
+}
+.ov-tile[aria-current='true'] {
+  outline: 3px solid #ef7777;
+  outline-offset: 3px;
+}
+.ov-n {
+  font-family: var(--f-mono);
+  font-size: 12px;
+  opacity: 0.7;
+}
+.ov-title {
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: 1.05rem;
+  line-height: 1.2;
+}
+
+/* ═══════ Flow mode: phones and portrait tablets reflow the slide ═══════ */
+
+.deck--flow .stage {
+  bottom: 60px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.deck--flow .slide {
+  position: relative;
+  inset: auto;
+}
+.deck--flow .canvas {
+  position: relative;
+}
+.deck--flow .slide-body {
+  height: auto;
+  min-height: calc(100dvh - 60px);
+  font-size: 15px;
+  padding: 24px 18px 20px;
+}
+.deck--flow .bar-title,
+.deck--flow .bar-hide-flow,
+.deck--flow .bar-step-k {
+  display: none;
+}
+.deck--flow .bar {
+  gap: 8px;
+}
+.deck--flow .bar-step {
+  font-size: 12px;
+}
+.deck--flow .bar-step + .bar-actions {
+  margin-left: 8px;
+}
+
+@media (max-width: 900px) {
+  .overview-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .overview-keys {
+    display: none;
+  }
+}
+@media (max-width: 560px) {
+  .overview-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .deck--flow .bar-btn--next span,
+  .deck--flow .bar-btn--text span {
+    display: none;
+  }
+}
+@media (max-width: 360px) {
+  .deck--flow .bar-btn {
+    min-width: 40px;
+    padding: 0 8px;
+  }
+}
+
+/* ═══════ Print (PDF) ═══════ */
+
+@page {
+  size: 1920px 1080px;
+  margin: 0;
+}
+html[data-print],
+html[data-print] body,
+html[data-print] #root {
+  height: auto;
+  overflow: visible;
+  background: #0b0d12;
+}
+.print-deck {
+  width: 1920px;
+}
+.print-page {
+  position: relative;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  break-after: page;
+  page-break-after: always;
+}
+.print-page .canvas {
+  position: absolute;
+  inset: 0;
+}
+html[data-print] *,
+html[data-print] *::before,
+html[data-print] *::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* ═══════ Reduced motion ═══════ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.001ms !important;
+    transition-delay: 0ms !important;
+  }
+  .deck--canvas .slide .slide-body {
+    transform: none !important;
+  }
+}
+

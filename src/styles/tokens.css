@@ -1,0 +1,142 @@
+/* Tokens — Cloud Risk Analyzer drawing set.
+   Two sheet stocks share one ink language. Colour has jobs:
+   red = reviewer markup / risk, amber = optional or planned, blue = proposed system,
+   cyan = input / data, green = completed or confirmed. */
+:root {
+  --table: #050608; /* the surface the sheets lie on */
+
+  --f-display: 'Inter Tight Variable', 'Inter Tight', ui-sans-serif, system-ui, sans-serif;
+  --f-body: 'Inter Variable', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --f-serif: 'Instrument Serif', ui-serif, Georgia, serif;
+  --f-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, Menlo, monospace;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  /* authored arrow mark (drawn in the sheets' 2px line weight), used as a mask */
+  --arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M3 12h15' stroke='black' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3Cpath d='M13 6l7 6-7 6' stroke='black' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  --ease: cubic-bezier(0.22, 0.61, 0.24, 1);
+
+  color-scheme: dark;
+}
+
+/* One stage. Colour has jobs: red = risk, blue = proposed analyzer, amber = planned / potential,
+   green = passed / confirmed, cyan = Terraform input. */
+.deck,
+.overview,
+.print-deck {
+  --bg: #0b0d12;
+  --bg-2: #11151d;
+  --raised: #171d28;
+  --ink: #f4f5f7;
+  --text-2: #b0b7c3;
+  --text-3: #8a93a3;
+  --line: #232b38;
+  --line-strong: #364152;
+  --c-blue: #7ba7ff;
+  --c-cyan: #76d7e5;
+  --c-amber: #f3bd69;
+  --c-red: #ef7777;
+  --c-green: #7bc7a0;
+  --t-blue: rgb(123 167 255 / 0.14);
+  --t-red: rgb(239 119 119 / 0.14);
+  --t-amber: rgb(243 189 105 / 0.13);
+  --t-green: rgb(123 199 160 / 0.14);
+  /* real-software surfaces */
+  --chrome: #e8eaee;
+  --chrome-ink: #3b4250;
+  --editor: #0f1319;
+  --terminal: #07090c;
+  --report: #f6f7f9;
+  --report-ink: #14171d;
+  --on-solid: #0b0d12;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--table);
+  color: #f4f5f7;
+  font-family: var(--f-body);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+
+h1,
+h2,
+h3,
+p,
+ul,
+ol,
+dl,
+dd,
+figure,
+pre {
+  margin: 0;
+}
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+code,
+kbd,
+pre {
+  font-family: var(--f-mono);
+}
+
+::selection {
+  background: rgb(239 119 119 / 0.35);
+}
+
+:focus-visible {
+  outline: 3px solid var(--c-blue, #7ba7ff);
+  outline-offset: 3px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.mono {
+  font-family: var(--f-mono);
+}
+
+em {
+  font-family: var(--f-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.005em;
+}
