@@ -1,0 +1,11 @@
+{
+  // Static deployment of the built presentation (Vite output in dist/).
+  // Cloudflare build settings: build command `npm run build`, deploy command `npx wrangler deploy`.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "fyp-monitoring-presentation",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "single-page-application"
+  }
+}
