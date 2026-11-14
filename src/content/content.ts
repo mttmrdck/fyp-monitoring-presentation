@@ -148,11 +148,42 @@ export const objectives: { id: string; short: string; text: string; parts: Part[
 
 export const pipeline: { id: Part; title: string; detail: string }[] = [
   { id: 'input', title: 'Terraform', detail: 'HCL + plan JSON' },
-  { id: 'rules', title: 'Rule checks', detail: '~10 rules · S3 · IAM · SG' },
+  { id: 'rules', title: 'Rule checks', detail: '10 rules · S3 · SG · IAM' },
   { id: 'graph', title: 'Relationship graph', detail: 'resources · identities · permissions' },
   { id: 'explain', title: 'Explain & prioritise', detail: 'evidence · fix · ranking' },
   { id: 'report', title: 'CLI / HTML report', detail: 'read before deploying' },
   { id: 'fix', title: 'AI-assisted fix', detail: 'suggest · approve · re-scan' },
+]
+
+/** The 10 planned rules (proposal: "10 declarative rules, each mapped to a published benchmark").
+ *  Numbering follows the Learning Pathway: rule 1 = S3 Block Public Access, 8–9 = wildcard permissions, 10 = wildcard principal.
+ *  `demo` marks the rules that slide 2's main.tf triggers. */
+export const ruleCatalogue: { group: string; rules: { n: number; t: string; demo?: boolean }[] }[] = [
+  {
+    group: 'S3',
+    rules: [
+      { n: 1, t: 'Block Public Access not fully enabled', demo: true },
+      { n: 2, t: 'Bucket ACL or policy allows public access' },
+      { n: 3, t: 'Default encryption not configured' },
+      { n: 4, t: 'HTTPS-only access not enforced' },
+    ],
+  },
+  {
+    group: 'Security groups',
+    rules: [
+      { n: 5, t: 'SSH (22) open to 0.0.0.0/0 or ::/0', demo: true },
+      { n: 6, t: 'RDP (3389) open to the internet' },
+      { n: 7, t: 'All ports or protocols open to the internet' },
+    ],
+  },
+  {
+    group: 'IAM',
+    rules: [
+      { n: 8, t: 'Wildcard Action ("*") in an Allow statement' },
+      { n: 9, t: 'Wildcard Resource ("*") for restrictable actions', demo: true },
+      { n: 10, t: 'Wildcard Principal in a trust or resource policy' },
+    ],
+  },
 ]
 
 export const evaluation = [

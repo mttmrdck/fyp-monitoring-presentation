@@ -14,7 +14,7 @@ web
 
 ## Product Purpose
 
-A 9-slide FYP monitoring presentation (originally capped at 8; the presenter approved a 9th slide for AI-assisted remediation in Nov 2026), covering the lecturer's six criteria ( project title, introduction, objectives, problem statement, literature review, stakeholder collaboration initiative) for an undergraduate Computer Science FYP: *Explainable and Context-Aware AWS Cloud Misconfiguration and Attack-Path Risk Analyzer — A Terraform-Based Pre-Deployment Analysis with Optional Read-Only AWS Validation* (short label: Cloud Risk Analyzer). Two deliverables share one content source: an interactive website (progressive reveals allowed) and a 16:9 PDF where everything is visible. Success: the lecturer understands the project from the visuals, not from paragraphs.
+A 9-slide FYP monitoring presentation (originally capped at 8; the presenter approved a 9th slide for AI-assisted remediation in Nov 2026), covering the lecturer's six criteria ( project title, introduction, objectives, problem statement, literature review, stakeholder collaboration initiative) for an undergraduate Computer Science FYP: *Explainable Cloud Security Analyzer with Attack-Path Analysis and AI-Assisted Remediation — A Terraform-Based Pre-Deployment Analysis with Optional Read-Only AWS Validation* (short label: Cloud Risk Analyzer). Two deliverables share one content source: an interactive website (progressive reveals allowed) and a 16:9 PDF where everything is visible. Success: the lecturer understands the project from the visuals, not from paragraphs.
 
 ## Positioning
 

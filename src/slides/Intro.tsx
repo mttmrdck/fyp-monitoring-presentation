@@ -71,9 +71,9 @@ export function S1Title({ mode }: SlideProps) {
       <div className="s1-grid">
         <div>
           <h1 className="s1-title">
-            {dec('Explainable and Context‑Aware AWS Cloud Misconfiguration and ')}
+            {dec('Explainable Cloud Security Analyzer with ')}
             <em>{dec('Attack‑Path')}</em>
-            {dec(' Risk Analyzer')}
+            {dec(' Analysis and AI‑Assisted Remediation')}
           </h1>
           <p className="s1-sub">{project.subtitle}</p>
           <dl className="s1-meta">

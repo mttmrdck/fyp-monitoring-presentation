@@ -78,6 +78,7 @@ try {
   await go(4)
   const litFor = async () => (await active('.pipe-stage.is-lit .pipe-t').allInnerTexts()).join(',')
   ok('O1 lights Terraform + Rule checks', (await litFor()) === 'Terraform,Rule checks')
+  ok('O1 lights the 10-rule catalogue', (await active('.rules.is-lit li').count()) === 10)
   await active('.objs .obj-head').nth(1).click()
   await page.waitForTimeout(150)
   ok('O2 lights the relationship graph', (await litFor()) === 'Relationship graph')
@@ -199,6 +200,8 @@ try {
     'farhan helmy',
     'iam_instance_profile → aws_iam_instance_profile.app',
     'ai-assisted remediation',
+    'rdp (3389) open to the internet',
+    'wildcard principal in a trust or resource policy',
     'never runs terraform apply',
     'reject → main.tf unchanged',
     'terraform validate',

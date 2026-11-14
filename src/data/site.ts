@@ -13,7 +13,7 @@ export const presenter = {
 }
 
 export const project = {
-  title: 'Explainable and Context-Aware AWS Cloud Misconfiguration and Attack-Path Risk Analyzer',
+  title: 'Explainable Cloud Security Analyzer with Attack-Path Analysis and AI-Assisted Remediation',
   subtitle: 'A Terraform-Based Pre-Deployment Analysis with Optional Read-Only AWS Validation',
   short: 'Cloud Risk Analyzer',
   occasion: 'FYP Monitoring Presentation',

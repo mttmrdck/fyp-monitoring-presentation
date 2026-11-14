@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'motion/react'
 import { Database, Globe, KeyRound, Server, ShieldAlert } from 'lucide-react'
 import { Slide, type SlideProps } from '../components/Slide'
-import { evaluation, objectives, pipeline, problems, type Part } from '../content/content'
+import { evaluation, objectives, pipeline, problems, ruleCatalogue, type Part } from '../content/content'
 
 /* ───────── 3 · Problem statement ───────── */
 
@@ -131,6 +131,28 @@ export function S4Objectives({ mode, step, setStep }: SlideProps) {
           </div>
         ))}
       </div>
+      <section className={`rules ${lit('rules') ? 'is-lit' : ''}`} aria-label="The 10 planned rules">
+        <p className="rules-h">
+          <b>10 rules</b> each mapped to CIS / AWS guidance
+          <span className="rules-key">
+            <span className="rules-dot" aria-hidden="true" /> found in slide 2's main.tf
+          </span>
+        </p>
+        {ruleCatalogue.map((g) => (
+          <div key={g.group} className="rules-g">
+            <p className="rules-gh">{g.group}</p>
+            <ol>
+              {g.rules.map((r) => (
+                <li key={r.n} className={r.demo ? 'is-demo' : ''}>
+                  <span className="rules-n">{String(r.n).padStart(2, '0')}</span>
+                  {r.t}
+                  {r.demo ? <span className="rules-dot" aria-label="(in main.tf)" /> : null}
+                </li>
+              ))}
+            </ol>
+          </div>
+        ))}
+      </section>
       <ol className="objs">
         {objectives.slice(0, 3).map((o, i) => {
           const on = pdf || i === sel
