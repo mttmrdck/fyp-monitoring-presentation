@@ -1,0 +1,53 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "dark-glow",
+        "value": "*",
+        "files": [
+          "public/submission/index.html"
+        ],
+        "createdAt": "2026-11-14T06:33:11.732Z",
+        "reason": "User-supplied reference image for this deck is a dark template with blue glow lighting; glow is the requested style"
+      },
+      {
+        "rule": "gradient-text",
+        "value": "*",
+        "files": [
+          "public/submission/index.html"
+        ],
+        "createdAt": "2026-11-14T06:33:11.749Z",
+        "reason": "User-supplied reference uses gradient-faded large numerals; kept only on section numerals and the 10-rules figure"
+      },
+      {
+        "rule": "kicker-above-heading",
+        "value": "*",
+        "files": [
+          "public/submission/index.html"
+        ],
+        "createdAt": "2026-11-14T06:36:32.275Z",
+        "reason": "Label names the lecturer's assessment criterion (01 Project Title … 06 Stakeholder Collaboration) that each slide answers; required for the submission"
+      },
+      {
+        "rule": "oversized-h1",
+        "value": "*",
+        "files": [
+          "public/submission/index.html"
+        ],
+        "createdAt": "2026-11-14T06:36:32.291Z",
+        "reason": "Cover h1 is the formal project title, which must be shown in full; user-supplied reference sets the title at display size"
+      },
+      {
+        "rule": "overused-font",
+        "value": "inter",
+        "files": [
+          "public/submission/index.html"
+        ],
+        "createdAt": "2026-11-14T06:36:32.306Z",
+        "reason": "Inter is the project's established body face (DESIGN.md); headings use Sora to match the user's reference"
+      }
+    ]
+  }
+}

@@ -1,0 +1,782 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FYP Submission Deck</title>
+<meta name="description" content="Explainable Cloud Security Analyzer with Attack-Path Analysis and AI-Assisted Remediation: FYP monitoring submission deck." />
+<style>
+@font-face { font-family: 'Sora'; src: url(fonts/sora-latin-wght.woff2) format('woff2'); font-weight: 100 800; }
+@font-face { font-family: 'Inter'; src: url(fonts/inter-latin-wght-normal.woff2) format('woff2'); font-weight: 100 900; }
+@font-face { font-family: 'JB Mono'; src: url(fonts/jetbrains-mono-latin-wght-normal.woff2) format('woff2'); font-weight: 100 900; }
+
+:root {
+  --bg: #040509;
+  --ink: #f5f7fb;
+  --t2: #a9b2c3;
+  --t3: #6f7a8e;
+  --line: rgb(255 255 255 / 0.09);
+  --glass: rgb(255 255 255 / 0.035);
+  --blue: #2f6bff;
+  --blue-2: #5b8cff;
+  --sky: #8fc2ff;
+  --cyan: #5fd4ff;
+  --red: #ff6b6b;
+  --green: #5fd39a;
+  --amber: #f5bd5c;
+  --f-head: 'Sora', 'Inter', system-ui, sans-serif;
+  --f-body: 'Inter', system-ui, sans-serif;
+  --f-mono: 'JB Mono', ui-monospace, Menlo, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: #000; color: var(--ink); font-family: var(--f-body); -webkit-font-smoothing: antialiased; }
+h1, h2, h3, p, ul, ol { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+a { color: inherit; }
+
+/* ───── Stage: one 1920×1080 sheet at a time, scaled to fit ───── */
+.deck { position: fixed; inset: 0 0 56px; overflow: hidden; }
+.slide {
+  position: absolute; left: 50%; top: 50%;
+  width: 1920px; height: 1080px;
+  transform-origin: center; overflow: hidden;
+  background:
+    radial-gradient(900px 520px at 100% 100%, rgb(47 107 255 / 0.18), transparent 70%),
+    var(--bg);
+  padding: 80px 96px 70px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.45s ease;
+  font-size: 24px; line-height: 1.45;
+}
+.slide.is-on { opacity: 1; pointer-events: auto; }
+.slide::after { /* fine grain of light at the bottom edge */
+  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, rgb(91 140 255 / 0.5), transparent);
+}
+
+/* entry motion (web only) */
+.slide .rise { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s cubic-bezier(.2,.8,.2,1); }
+.slide.is-on .rise { opacity: 1; transform: none; }
+.slide.is-on .rise.d1 { transition-delay: .08s } .slide.is-on .rise.d2 { transition-delay: .16s }
+.slide.is-on .rise.d3 { transition-delay: .24s } .slide.is-on .rise.d4 { transition-delay: .32s }
+.slide.is-on .rise.d5 { transition-delay: .40s } .slide.is-on .rise.d6 { transition-delay: .48s }
+
+/* ───── Shared slide furniture ───── */
+.head { display: flex; justify-content: space-between; align-items: flex-start; gap: 60px; }
+.h2 { font-family: var(--f-head); font-weight: 600; font-size: 52px; line-height: 1.08; letter-spacing: -0.02em; }
+.h2 .soft { color: var(--sky); }
+.note { max-width: 560px; text-align: right; font-size: 18px; line-height: 1.5; color: var(--t3); }
+.crit { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 18px; font-family: var(--f-mono); font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--blue-2); }
+.crit b { color: var(--ink); font-weight: 600; }
+.page { position: absolute; right: 96px; bottom: 34px; font-size: 14px; color: var(--t3); font-family: var(--f-mono); }
+.brand { position: absolute; left: 96px; bottom: 34px; font-size: 14px; color: var(--t3); font-family: var(--f-mono); }
+.chip { display: inline-flex; align-items: center; gap: 10px; padding: 8px 16px; border-radius: 999px; background: rgb(16 20 32 / 0.78); border: 1px solid var(--line); font-size: 17px; color: var(--t2); backdrop-filter: blur(8px); white-space: nowrap; }
+.chip i { width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; background: rgb(255 255 255 / 0.12); font-style: normal; font-size: 11px; color: var(--ink); }
+.chip.red i { background: var(--red); color: #1a0505; }
+.chip.blue i { background: var(--blue); }
+.glass {
+  background: linear-gradient(160deg, rgb(255 255 255 / 0.06), rgb(255 255 255 / 0.015));
+  border: 1px solid var(--line); border-radius: 24px;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06), 0 30px 80px rgb(0 0 0 / 0.45);
+  transition: border-color .3s, transform .3s, background .3s;
+}
+a.glass, .hover.glass { cursor: pointer; text-decoration: none; }
+.glass.hover:hover, a.glass:hover { border-color: rgb(91 140 255 / 0.55); transform: translateY(-4px); }
+.mono { font-family: var(--f-mono); }
+
+/* ───── Glow objects (pure CSS, no imagery) ───── */
+.torus { position: absolute; border-radius: 50%; filter: drop-shadow(0 0 60px rgb(47 107 255 / 0.55)); }
+.torus::before, .torus::after { content: ''; position: absolute; inset: 0; border-radius: 50%; }
+.torus::before {
+  background:
+    radial-gradient(circle, transparent 33%, #071a8a 35%, #1d4dff 41%, #8fc2ff 47%, #e9f3ff 49%, #4a7dff 53%, #0b2bd1 59%, #020a4a 64%, transparent 66%);
+}
+.torus::after {
+  background: conic-gradient(from 210deg, transparent 0 20%, rgb(255 255 255 / 0.55) 28%, transparent 36% 70%, rgb(143 194 255 / 0.45) 80%, transparent 90%);
+  mask: radial-gradient(circle, transparent 40%, #000 44% 56%, transparent 60%);
+  filter: blur(6px);
+}
+.spin { animation: spin 26s linear infinite; }
+@keyframes spin { to { rotate: 360deg; } }
+.orb {
+  position: absolute; border-radius: 50%;
+  background: radial-gradient(circle at 34% 28%, #eaf4ff 0, #8fc2ff 9%, #2f6bff 30%, #0a1fb0 55%, #030a3d 74%, transparent 76%);
+  filter: drop-shadow(0 0 70px rgb(47 107 255 / 0.6));
+}
+.horizon {
+  position: absolute; left: -10%; right: -10%; height: 900px; border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 0%, #0b1a5c 0%, #040509 55%);
+  box-shadow: 0 -2px 0 rgb(143 194 255 / 0.9), 0 -30px 120px rgb(47 107 255 / 0.65), inset 0 30px 90px rgb(47 107 255 / 0.35);
+}
+.cube {
+  position: absolute; width: 150px; height: 150px; border-radius: 28px; rotate: 18deg;
+  background: linear-gradient(140deg, #bfe0ff 0%, #3c7bff 30%, #0b2bd1 70%, #04104f 100%);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.25), inset 20px 20px 50px rgb(255 255 255 / 0.25), 0 0 80px rgb(47 107 255 / 0.6);
+}
+
+/* ───── 1 · Cover ───── */
+.cover { display: grid; grid-template-columns: 1.1fr 0.9fr; height: 100%; align-items: center; }
+.cover h1 { font-family: var(--f-head); font-weight: 700; font-size: 84px; line-height: 1.02; letter-spacing: -0.03em; }
+.cover h1 span { display: block; margin-top: 18px; font-size: 44px; font-weight: 600; line-height: 1.15; letter-spacing: -0.02em; color: var(--sky); }
+.cover .lead { margin-top: 28px; font-size: 24px; color: var(--t2); }
+.who { display: grid; grid-template-columns: auto auto; gap: 60px; margin-top: 60px; padding-top: 30px; border-top: 1px solid var(--line); width: fit-content; }
+.who dt { font-family: var(--f-mono); font-size: 14px; letter-spacing: .12em; text-transform: uppercase; color: var(--t3); }
+.who dd { margin: 6px 0 0; font-size: 21px; }
+.who dd b { font-weight: 650; }
+.who dd small { display: block; font-size: 17px; color: var(--t2); }
+.cover-art { position: relative; height: 100%; }
+.cover-art .chip { position: absolute; }
+
+/* ───── 2 · Contents ───── */
+.toc { display: grid; grid-template-columns: 0.8fr 1.2fr; height: 100%; align-items: center; gap: 80px; }
+.toc-l { position: relative; height: 560px; display: flex; align-items: center; }
+.toc-l h2 { position: relative; z-index: 1; font-family: var(--f-head); font-weight: 700; font-size: 72px; line-height: 1; letter-spacing: -0.02em; }
+.toc ol { display: flex; flex-direction: column; }
+.toc li a { display: grid; grid-template-columns: 90px 1fr auto; align-items: baseline; padding: 26px 8px; border-bottom: 1px solid var(--line); text-decoration: none; transition: padding .25s, background .25s; border-radius: 10px; }
+.toc li a:hover { padding-left: 24px; background: rgb(47 107 255 / 0.08); }
+.toc .n { font-family: var(--f-head); font-size: 26px; color: var(--blue-2); }
+.toc .t { font-family: var(--f-head); font-size: 32px; font-weight: 600; letter-spacing: -0.01em; }
+.toc .d { font-size: 18px; color: var(--t3); }
+
+/* ───── 3 · Title breakdown ───── */
+.title-big { margin-top: 44px; font-family: var(--f-head); font-weight: 600; font-size: 46px; line-height: 1.15; letter-spacing: -0.02em; max-width: 1500px; }
+.title-big em { font-style: normal; color: var(--sky); }
+.trio { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-top: 56px; }
+.trio .glass { position: relative; padding: 38px 36px 40px; min-height: 330px; overflow: hidden; }
+.trio .k { font-family: var(--f-mono); font-size: 15px; letter-spacing: .12em; text-transform: uppercase; color: var(--blue-2); }
+.trio h3 { margin-top: 70px; font-family: var(--f-head); font-weight: 600; font-size: 34px; line-height: 1.12; letter-spacing: -0.01em; }
+.trio p { margin-top: 14px; font-size: 21px; color: var(--t2); }
+.trio .ix { position: absolute; right: 30px; top: 22px; font-family: var(--f-head); font-weight: 700; font-size: 80px; color: rgb(255 255 255 / 0.05); }
+.scope { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 34px; }
+
+/* ───── 4 · Introduction (section style) ───── */
+.sec-n { font-family: var(--f-head); font-weight: 700; font-size: 220px; line-height: .85; letter-spacing: -0.04em; background: linear-gradient(180deg, #fff 30%, #6f9cff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.intro { display: grid; grid-template-columns: 0.95fr 1.05fr; gap: 70px; margin-top: 40px; position: relative; z-index: 1; }
+.bg-list { display: flex; flex-direction: column; gap: 22px; margin-top: 34px; }
+.bg-list li { display: grid; grid-template-columns: 54px 1fr; align-items: baseline; font-size: 27px; line-height: 1.35; }
+.bg-list li span { font-family: var(--f-mono); font-size: 17px; color: var(--blue-2); }
+.code { align-self: start; margin-top: 60px; padding: 22px 0 26px; font-family: var(--f-mono); font-size: 18.5px; line-height: 1.7; }
+.code .cbar { display: flex; gap: 8px; padding: 0 24px 18px; border-bottom: 1px solid var(--line); margin-bottom: 14px; font-size: 14px; color: var(--t3); align-items: center; }
+.code .cbar i { width: 11px; height: 11px; border-radius: 50%; background: #ff5f57; } .code .cbar i:nth-child(2) { background: #febc2e; } .code .cbar i:nth-child(3) { background: #28c840; margin-right: 10px; }
+.code p { display: grid; grid-template-columns: 52px 1fr auto; padding: 0 24px; white-space: pre; color: #cbd5e1; }
+.code p .ln { color: #4b5568; }
+.code p.flag { background: rgb(255 107 107 / 0.12); color: #fff; }
+.code p.flag .why { font-family: var(--f-body); font-size: 15px; color: var(--red); align-self: center; padding-left: 16px; }
+.code .k { color: #8fc2ff; } .code .s { color: #f6c177; }
+.stats { position: absolute; left: 96px; right: 96px; bottom: 130px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; z-index: 1; }
+.stat { padding: 26px 30px; background: linear-gradient(160deg, rgb(20 26 44 / 0.9), rgb(10 13 22 / 0.9)); }
+.stat b { display: block; font-family: var(--f-head); font-weight: 700; font-size: 64px; line-height: 1; letter-spacing: -0.03em; }
+.stat span { display: block; margin-top: 10px; font-size: 19px; color: var(--t2); }
+
+/* ───── 5 · Overview: chevron workflow + path ───── */
+.chev { display: grid; grid-template-columns: repeat(7, 1fr); margin-top: 64px; }
+.chev li { position: relative; height: 150px; margin-right: -14px; padding: 26px 30px 0 44px; background: linear-gradient(160deg, #141a2a, #0b0f19); clip-path: polygon(0 0, calc(100% - 34px) 0, 100% 50%, calc(100% - 34px) 100%, 0 100%, 34px 50%); transition: background .3s; cursor: default; }
+.chev li:first-child { clip-path: polygon(0 0, calc(100% - 34px) 0, 100% 50%, calc(100% - 34px) 100%, 0 100%); padding-left: 30px; }
+.chev li:hover { background: linear-gradient(160deg, #1b2440, #10162a); }
+.chev li.ai { background: linear-gradient(140deg, #4d86ff, #1238e0 60%, #0a1c8a); }
+.chev .n { font-family: var(--f-mono); font-size: 15px; color: var(--t3); }
+.chev li.ai .n { color: #dce8ff; }
+.chev .t { margin-top: 6px; font-family: var(--f-head); font-weight: 600; font-size: 22px; line-height: 1.15; }
+.chev .w { margin-top: 6px; font-size: 15px; color: var(--t2); }
+.chev li.ai .w { color: #dce8ff; }
+.owners { display: grid; grid-template-columns: repeat(7, 1fr); margin-top: 14px; font-family: var(--f-mono); font-size: 14px; letter-spacing: .1em; text-transform: uppercase; color: var(--t3); }
+.owners span { padding-left: 44px; } .owners span:first-child { padding-left: 30px; }
+.owners .ai { color: var(--sky); }
+.ov-grid { display: grid; grid-template-columns: 1.35fr 0.65fr; gap: 28px; margin-top: 50px; }
+.path { padding: 34px 36px 30px; }
+.path h3, .rules-box h3 { font-family: var(--f-mono); font-size: 15px; letter-spacing: .12em; text-transform: uppercase; color: var(--t3); font-weight: 500; }
+.nodes { display: flex; align-items: center; margin-top: 34px; }
+.node { flex: none; padding: 16px 18px; border-radius: 16px; background: rgb(255 255 255 / 0.05); border: 1px solid var(--line); text-align: center; min-width: 120px; }
+.node b { display: block; font-size: 20px; font-weight: 650; }
+.node small { display: block; margin-top: 2px; font-family: var(--f-mono); font-size: 13px; color: var(--t3); }
+.node.bad { border-color: rgb(255 107 107 / 0.6); background: rgb(255 107 107 / 0.08); }
+.node.bad small { color: var(--red); }
+.node.target { border-color: var(--red); }
+.link { flex: 1; min-width: 90px; position: relative; height: 2px; background: linear-gradient(90deg, var(--red), #ff9a9a); margin: 0 6px; }
+.link span { position: absolute; left: 50%; bottom: 10px; translate: -50% 0; font-family: var(--f-mono); font-size: 13px; color: var(--t2); white-space: nowrap; }
+.path .cap { margin-top: 58px; font-size: 19px; color: var(--t2); }
+.path .cap b { color: var(--red); font-weight: 600; }
+.rules-box { padding: 34px 36px; }
+.rules-box .big { margin-top: 18px; font-family: var(--f-head); font-weight: 700; font-size: 96px; line-height: 1; letter-spacing: -0.04em; background: linear-gradient(180deg, #fff, #5b8cff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.rules-box p { margin-top: 12px; font-size: 19px; color: var(--t2); }
+.rules-box .tags { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+
+/* ───── 6 · Objectives ───── */
+.objs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 26px; margin-top: 60px; }
+.obj { position: relative; padding: 36px 32px 34px; min-height: 520px; display: flex; flex-direction: column; cursor: pointer; }
+.obj .n { font-family: var(--f-head); font-weight: 500; font-size: 92px; line-height: 1; letter-spacing: -0.04em; }
+.obj h3 { margin-top: auto; font-family: var(--f-head); font-weight: 600; font-size: 27px; line-height: 1.2; }
+.obj p { margin-top: 12px; font-size: 19px; color: var(--t2); }
+.obj .ans { margin-top: 18px; font-family: var(--f-mono); font-size: 14px; color: var(--red); }
+.obj .arrow { position: absolute; right: -19px; top: 50%; translate: 0 -50%; width: 38px; height: 38px; border-radius: 50%; background: #fff; color: #000; display: grid; place-items: center; font-size: 18px; z-index: 2; }
+.obj .cube { right: 40px; top: 60px; width: 120px; height: 120px; opacity: 0; transition: opacity .4s; }
+.obj.is-sel { border-color: rgb(91 140 255 / 0.7); background: linear-gradient(160deg, rgb(47 107 255 / 0.2), rgb(255 255 255 / 0.02)); }
+.obj.is-sel .cube { opacity: 1; }
+.measure { display: flex; gap: 14px; margin-top: 30px; flex-wrap: wrap; }
+
+/* ───── 7 · Problem statement ───── */
+.ps-visual { display: grid; grid-template-columns: 1fr 120px 1.4fr; align-items: center; margin-top: 46px; }
+.iso { position: relative; height: 210px; }
+.iso .chip { position: absolute; }
+.iso-cap, .con-cap { font-family: var(--f-mono); font-size: 14px; letter-spacing: .12em; text-transform: uppercase; color: var(--t3); margin-bottom: 14px; }
+.big-arrow { justify-self: center; width: 70px; height: 70px; border-radius: 50%; background: #fff; color: #000; display: grid; place-items: center; font-size: 30px; }
+.con .nodes { margin-top: 0; }
+.con .node { min-width: 0; padding: 12px 14px; }
+.con .node b { font-size: 17px; }
+.ps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; margin-top: 54px; }
+.ps .glass { padding: 34px 34px 36px; }
+.ps .stage { font-family: var(--f-head); font-weight: 700; font-size: 44px; letter-spacing: -0.02em; }
+.ps .id { margin-top: 4px; font-family: var(--f-mono); font-size: 15px; color: var(--red); }
+.ps h3 { margin-top: 22px; font-size: 21px; font-weight: 650; line-height: 1.3; }
+.ps p { margin-top: 10px; font-size: 19px; color: var(--t2); }
+
+/* ───── 8 · Literature: tools ───── */
+.tools { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-top: 50px; }
+.tool { padding: 14px 14px 26px; }
+.shot { height: 360px; border-radius: 14px; overflow: hidden; background: #0d1220; border: 1px solid var(--line); }
+.shot img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
+.tool h3 { margin: 22px 12px 0; font-family: var(--f-head); font-weight: 600; font-size: 28px; display: flex; justify-content: space-between; align-items: baseline; }
+.tool h3 small { font-family: var(--f-mono); font-size: 13px; font-weight: 400; color: var(--blue-2); }
+.tool dl { margin: 14px 12px 0; display: grid; gap: 12px; }
+.tool dt { font-family: var(--f-mono); font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--t3); }
+.tool dd { margin: 2px 0 0; font-size: 18px; color: var(--t2); line-height: 1.4; }
+.tool dd.gap { color: var(--ink); }
+
+/* ───── 9 · Literature: papers + gap ───── */
+.papers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 50px; }
+.paper { display: grid; grid-template-columns: 180px 1fr; gap: 26px; padding: 24px; text-decoration: none; }
+.paper img { width: 180px; height: 250px; object-fit: cover; object-position: top; border-radius: 8px; background: #fff; }
+.paper .yr { font-family: var(--f-mono); font-size: 14px; color: var(--blue-2); }
+.paper h3 { margin-top: 6px; font-size: 19px; font-weight: 650; line-height: 1.3; }
+.paper p { margin-top: 10px; font-size: 17px; color: var(--t2); line-height: 1.4; }
+.paper p.lim { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 15px; color: var(--t3); }
+.paper p.lim b { color: var(--amber); font-weight: 600; }
+.gapbar { margin-top: 44px; padding: 34px 40px; display: grid; grid-template-columns: 340px 1fr; gap: 40px; align-items: center; background: linear-gradient(120deg, rgb(47 107 255 / 0.28), rgb(47 107 255 / 0.04) 60%); }
+.gapbar h3 { font-family: var(--f-head); font-weight: 600; font-size: 34px; line-height: 1.15; }
+.gapbar ol { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+.gapbar li { padding-left: 18px; border-left: 2px solid var(--blue-2); }
+.gapbar li b { display: block; font-size: 21px; font-weight: 650; }
+.gapbar li span { display: block; margin-top: 4px; font-size: 16px; color: var(--t2); }
+
+/* ───── 10 · Stakeholders ───── */
+.people { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-top: 54px; }
+.person { padding: 0 0 30px; overflow: hidden; display: flex; flex-direction: column; }
+.portrait { position: relative; height: 270px; display: grid; place-items: center; background: radial-gradient(circle at 50% 120%, rgb(47 107 255 / 0.75), rgb(47 107 255 / 0.08) 55%, transparent 70%); border-bottom: 1px solid var(--line); }
+.portrait .av { width: 130px; height: 130px; border-radius: 50%; display: grid; place-items: center; font-family: var(--f-head); font-weight: 700; font-size: 44px; background: linear-gradient(160deg, #1d2a4d, #0a1024); border: 1px solid rgb(143 194 255 / 0.4); box-shadow: 0 0 60px rgb(47 107 255 / 0.45); }
+.portrait.lead { background: radial-gradient(circle at 50% 120%, rgb(95 211 154 / 0.6), rgb(95 211 154 / 0.06) 55%, transparent 70%); }
+.status { position: absolute; left: 22px; top: 20px; }
+.status.ok i { background: var(--green); color: #04140c; }
+.status.pot i { background: transparent; border: 1.5px dashed var(--t2); }
+.person h3 { margin: 24px 28px 0; font-family: var(--f-head); font-weight: 600; font-size: 25px; line-height: 1.2; }
+.person .role { margin: 6px 28px 0; font-size: 17px; color: var(--sky); }
+.person dl { margin: 18px 28px 0; display: grid; gap: 12px; }
+.person dt { font-family: var(--f-mono); font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--t3); }
+.person dd { margin: 2px 0 0; font-size: 17px; color: var(--t2); line-height: 1.4; }
+.person dd.given { color: var(--ink); }
+.person .links { margin: auto 28px 0; padding-top: 18px; display: flex; gap: 18px; font-size: 16px; color: var(--sky); }
+.ok-chip i { background: var(--green); color: #04140c; }
+.collab-line { margin-top: 30px; display: flex; gap: 14px; flex-wrap: wrap; }
+
+/* ───── 11 · References ───── */
+.refs { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; margin-top: 50px; }
+.refs h3 { font-family: var(--f-mono); font-size: 15px; letter-spacing: .12em; text-transform: uppercase; color: var(--t3); font-weight: 500; margin-bottom: 18px; }
+.refs li { padding: 16px 0; border-bottom: 1px solid var(--line); font-size: 19px; line-height: 1.45; color: var(--t2); }
+.refs li a { color: var(--ink); }
+
+/* ───── 12 · Thank you ───── */
+.thanks { height: 100%; display: grid; place-items: center; text-align: center; position: relative; }
+.thanks h2 { position: relative; z-index: 1; font-family: var(--f-head); font-weight: 700; font-size: 150px; letter-spacing: -0.04em; line-height: 1; }
+.thanks p { position: relative; z-index: 1; margin-top: 26px; font-size: 26px; color: var(--t2); }
+.thanks .flow { position: relative; z-index: 1; margin-top: 40px; display: flex; gap: 12px; justify-content: center; }
+
+/* ───── Control bar (web only) ───── */
+.bar { position: fixed; left: 0; right: 0; bottom: 0; height: 56px; display: flex; align-items: center; gap: 14px; padding: 0 18px; background: #07080c; border-top: 1px solid #161a24; font-size: 14px; color: var(--t2); z-index: 10; }
+.bar .prog { position: absolute; left: 0; top: -1px; height: 2px; background: var(--blue-2); transition: width .3s; }
+.bar .count { font-family: var(--f-mono); color: var(--ink); white-space: nowrap; }
+.bar .ttl { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.bar button, .bar a { white-space: nowrap; flex: none; }
+@media (max-width: 1000px) { .bar .ttl { display: none; } }
+.bar .ttl { color: var(--t3); }
+.bar .sp { flex: 1; }
+.bar button, .bar a { height: 38px; padding: 0 16px; border-radius: 9px; border: 1px solid #262c3a; background: #10131b; color: var(--ink); font: inherit; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+.bar button:hover, .bar a:hover { border-color: var(--blue-2); }
+.bar .primary { background: #fff; color: #000; border-color: #fff; font-weight: 600; }
+.dots { display: flex; gap: 6px; }
+.dots button { width: 10px; height: 10px; padding: 0; border-radius: 50%; border: 0; background: #2a3142; }
+.dots button.is-on { background: var(--blue-2); width: 26px; border-radius: 6px; }
+:focus-visible { outline: 3px solid var(--blue-2); outline-offset: 3px; }
+
+
+/* ───── 5 · attack-path tree, in the title-slide graph's visual language ───── */
+.slide.slate { background: radial-gradient(1100px 600px at 75% 0%, rgb(148 163 184 / 0.06), transparent 65%), #0b0d12; }
+.slide.slate::after { background: linear-gradient(90deg, transparent, rgb(148 163 184 / 0.25), transparent); }
+.slate .h2 .soft { color: #c9d0db; }
+.slate .crit { color: #8a93a3; }
+.slate .chev { margin-top: 34px; }
+.slate .chev li { height: 88px; padding-top: 14px; background: #121620; }
+.slate .chev li:hover { background: #171c28; }
+.slate .chev li.ai { background: #1f2635; box-shadow: none; }
+.slate .chev li.ai .t { color: #fff; }
+.slate .chev li.ai .n, .slate .chev li.ai .w { color: #b8c4dc; }
+.slate .chev .t { margin-top: 2px; font-size: 19px; }
+.slate .chev .n { font-size: 13px; }
+.slate .chev .w { font-size: 14px; color: #8a93a3; }
+.slate .owners { margin-top: 10px; font-size: 12px; }
+.slate .owners .ai { color: #b8c4dc; }
+.slate .ov-grid { grid-template-columns: 1fr 300px; gap: 24px; margin-top: 30px; }
+.path-panel { padding: 26px 30px 22px; border-radius: 14px; background: #0e1118; border: 1px solid #1f2632; }
+.path-panel h3, .rules-slate h3 { font-family: var(--f-mono); font-size: 14px; letter-spacing: .12em; text-transform: uppercase; color: #6f7a8e; font-weight: 500; }
+.tree { display: block; width: 100%; height: auto; margin-top: 22px; overflow: visible; }
+.tree .t-sec line { stroke: #2a3241; stroke-width: 1.4; }
+.tree .t-dots rect { fill: #11151d; stroke: #4b5568; stroke-width: 1.6; }
+.tree .t-dots text { font-family: var(--f-mono); font-size: 13.5px; fill: #6f7a8e; }
+.tree .t-path line { stroke: #ef7777; stroke-width: 3.2; stroke-linecap: round; stroke-dasharray: var(--len); stroke-dashoffset: 0; }
+.tree .t-card rect { fill: #151a24; stroke: #aab3c2; stroke-width: 1.4; }
+.tree .t-card rect.t-under { fill: #06080b; stroke: none; }
+.tree .t-card.is-target rect:not(.t-under) { stroke: #ef7777; fill: #1f1418; }
+.tree .t-t { font-family: var(--f-body); font-size: 18px; font-weight: 650; fill: #f4f5f7; }
+.tree .t-r { font-family: var(--f-mono); font-size: 13px; fill: #8a93a3; }
+.tree .is-target .t-r { fill: #ef9a9a; }
+.tree .t-lab rect { fill: #0e1118; stroke: rgb(239 119 119 / 0.35); stroke-width: 1; }
+.tree .t-lab text { font-family: var(--f-mono); font-size: 13px; fill: #f2a7a7; }
+.path-foot { display: flex; justify-content: space-between; align-items: center; gap: 40px; margin-top: 18px; padding-top: 16px; border-top: 1px solid #1a202b; }
+.path-foot .cap { margin-top: 0 !important; max-width: 760px; text-align: right; font-size: 16px !important; }
+.legend { flex: none; display: flex; align-items: center; gap: 10px; font-size: 15px; color: #6f7a8e; }
+.legend span { display: inline-block; width: 26px; height: 0; border-top: 3px solid #ef7777; border-radius: 2px; }
+.legend .lg-sec { margin-left: 22px; border-top: 1.5px solid #3a4354; }
+.slate .path .cap, .path-panel .cap { margin-top: 12px; font-size: 18px; color: #a9b2c3; }
+.path-panel .cap b { color: #ef7777; font-weight: 600; }
+.rules-slate { padding: 26px 28px; border-radius: 14px; background: #0e1118; border: 1px solid #1f2632; display: flex; flex-direction: column; }
+.rules-slate .big { margin-top: 16px; font-family: var(--f-head); font-weight: 700; font-size: 92px; line-height: 1; letter-spacing: -0.04em; color: #f4f5f7; background: none; -webkit-background-clip: border-box; background-clip: border-box; }
+.rules-slate p { margin-top: 10px; font-size: 18px; color: #a9b2c3; }
+.rules-slate .tags { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; margin-top: auto; padding-top: 18px; }
+.rules-slate .chip { background: #151a24; border-color: #262e3c; font-size: 15px; }
+/* path draws in when the slide opens (web); print shows the final state */
+.slide .tree .t-path line { stroke-dashoffset: var(--len); transition: stroke-dashoffset .7s cubic-bezier(.4,0,.2,1) calc(.5s + var(--i) * .28s); }
+.slide.is-on .tree .t-path line, html.print .tree .t-path line { stroke-dashoffset: 0; }
+.slide .tree .t-lab { opacity: 0; transition: opacity .3s ease calc(.9s + var(--i) * .28s); }
+.slide.is-on .tree .t-lab, html.print .tree .t-lab { opacity: 1; }
+html.print .tree * { transition: none !important; }
+@media (prefers-reduced-motion: reduce) { .slide .tree .t-path line { stroke-dashoffset: 0; transition: none; } .slide .tree .t-lab { opacity: 1; transition: none; } }
+
+/* ───── Print / PDF: every sheet, final state ───── */
+@page { size: 1920px 1080px; margin: 0; }
+html.print, html.print body { height: auto; overflow: visible; background: var(--bg); }
+html.print .deck { position: static; }
+html.print .slide { position: relative; left: auto; top: auto; transform: none !important; opacity: 1; break-after: page; page-break-after: always; }
+html.print .slide .rise { opacity: 1; transform: none; transition: none; }
+html.print .bar, html.print .web-only { display: none !important; }
+html.print .spin { animation: none; }
+html.print .torus, html.print .orb { filter: none; }
+html.print .torus::after { filter: none; }
+html.print .chip { backdrop-filter: none; }
+html.print .glass { box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06); }
+@media (prefers-reduced-motion: reduce) { .spin { animation: none; } .slide, .slide .rise { transition: none; } }
+
+/* small screens: scroll through stacked sheets scaled down */
+@media (max-width: 760px) {
+  .dots, .bar .ttl, #fs { display: none; }
+  .bar { gap: 8px; padding: 0 10px; }
+  .bar .count { white-space: nowrap; font-size: 13px; }
+  .bar button, .bar a { padding: 0 12px; }
+}
+.rotate { display: none; }
+@media (orientation: portrait) and (max-width: 760px) {
+  .rotate { display: flex; position: fixed; left: 50%; bottom: 76px; translate: -50% 0; z-index: 9; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 999px; background: #151a24; border: 1px solid #262e3c; color: #c9d0db; font-size: 14px; white-space: nowrap; }
+  .rotate svg { width: 18px; height: 18px; }
+}
+html.print .rotate { display: none !important; }
+</style>
+</head>
+<body>
+<main class="deck" id="deck" aria-roledescription="presentation">
+
+<!-- 1 · Cover — Project title -->
+<section class="slide" id="s1" aria-label="Project title">
+  <div class="cover">
+    <div>
+      <p class="crit rise">01 · <b>Project Title</b> · Tentative</p>
+      <h1 class="rise d1">Explainable Cloud Security Analyzer<span>with Attack-Path Analysis and AI-Assisted Remediation</span></h1>
+      <p class="lead rise d2">A Terraform-based, pre-deployment analysis for AWS.</p>
+      <dl class="who rise d3">
+        <div><dt>Presented by</dt><dd><b>Muhammad Akif Zafran Bin Mohd Zulkifly</b><small>23001990 · Bachelor of Computer Science (Information Systems)</small></dd></div>
+        <div><dt>Supervisor</dt><dd><b>Dr. Fairuz Amalina Narudin</b><small>FYP Monitoring Presentation</small></dd></div>
+      </dl>
+    </div>
+    <div class="cover-art">
+      <div class="torus spin" style="width:760px;height:760px;right:-170px;top:90px"></div>
+      <span class="chip red rise d4" style="left:30px;top:250px"><i>✕</i>SSH open to 0.0.0.0/0</span>
+      <span class="chip red rise d5" style="left:40px;top:316px"><i>✕</i>s3:* on every resource</span>
+      <span class="chip blue rise d6" style="left:60px;top:720px"><i>✓</i>AI fix · re-checked by rules</span>
+    </div>
+  </div>
+  <p class="brand">Cloud Security Analyzer · FYP</p><p class="page">page 01</p>
+</section>
+
+<!-- 2 · Contents -->
+<section class="slide" id="s2" aria-label="Contents">
+  <div class="toc">
+    <div class="toc-l">
+      <div class="orb spin" style="width:420px;height:420px;left:120px;top:70px;opacity:.9"></div>
+      <h2 class="rise">Table of<br />Content</h2>
+    </div>
+    <ol>
+      <li class="rise d1"><a href="#s1"><span class="n">01</span><span class="t">Project Title</span><span class="d">page 01 · 03</span></a></li>
+      <li class="rise d2"><a href="#s4"><span class="n">02</span><span class="t">Introduction</span><span class="d">page 04 · 05</span></a></li>
+      <li class="rise d3"><a href="#s6"><span class="n">03</span><span class="t">Objectives</span><span class="d">page 06</span></a></li>
+      <li class="rise d4"><a href="#s7"><span class="n">04</span><span class="t">Problem Statement</span><span class="d">page 07</span></a></li>
+      <li class="rise d5"><a href="#s8"><span class="n">05</span><span class="t">Literature Review</span><span class="d">page 08 · 09</span></a></li>
+      <li class="rise d6"><a href="#s10"><span class="n">06</span><span class="t">Stakeholder Collaboration</span><span class="d">page 10</span></a></li>
+    </ol>
+  </div>
+  <p class="brand">Cloud Security Analyzer · FYP</p><p class="page">page 02</p>
+</section>
+
+<!-- 3 · Project title, word by word -->
+<section class="slide" id="s3" aria-label="Project title explained">
+  <div class="head">
+    <div><p class="crit rise">01 · <b>Project Title</b></p><h2 class="h2 rise d1">What the title<br /><span class="soft">promises</span></h2></div>
+    <p class="note rise d2">Tentative title. Each part maps to one capability of the analyzer.</p>
+  </div>
+  <p class="title-big rise d2"><em>Explainable</em> Cloud Security Analyzer with <em>Attack-Path Analysis</em> and <em>AI-Assisted Remediation</em></p>
+  <div class="trio">
+    <div class="glass hover rise d3"><span class="ix">01</span><p class="k">Explainable</p><h3>Every finding shows its evidence</h3><p>The exact Terraform line, why it is risky, and how to fix it.</p></div>
+    <div class="glass hover rise d4"><span class="ix">02</span><p class="k">Attack-Path Analysis</p><h3>Weaknesses are connected</h3><p>Resources, identities and permissions linked into one potential path.</p></div>
+    <div class="glass hover rise d5"><span class="ix">03</span><p class="k">AI-Assisted Remediation</p><h3>AI suggests, you approve</h3><p>A proposed Terraform fix, reviewed as a diff, then re-checked by the rules.</p></div>
+  </div>
+  <div class="scope rise d6">
+    <span class="chip">AWS</span><span class="chip">Terraform</span><span class="chip">S3</span><span class="chip">Security Groups</span><span class="chip">IAM</span><span class="chip">Before deployment</span><span class="chip">Never runs terraform apply</span>
+  </div>
+  <p class="brand">Cloud Security Analyzer · FYP</p><p class="page">page 03</p>
+</section>
+
+<!-- 4 · Introduction: background -->
+<section class="slide" id="s4" aria-label="Introduction: background">
+  <div class="horizon" style="top:985px"></div>
+  <div class="intro">
+    <div>
+      <p class="crit rise">02 · <b>Introduction</b> · Background</p>
+      <p class="sec-n rise d1">02</p>
+      <ol class="bg-list">
+        <li class="rise d2"><span>01</span>Cloud infrastructure is now written as code with Terraform.</li>
+        <li class="rise d3"><span>02</span>One wrong line is deployed every time the file is applied.</li>
+        <li class="rise d4"><span>03</span>Scanners list findings one by one, not how they connect.</li>
+      </ol>
+    </div>
+    <div class="glass code rise d3" aria-label="Terraform excerpt">
+      <div class="cbar"><i></i><i></i><i></i>main.tf · excerpt</div>
+      <p><span class="ln">3</span><span>    from_port   = <span class="s">22</span></span></p>
+      <p class="flag"><span class="ln">6</span><span>    cidr_blocks = [<span class="s">"0.0.0.0/0"</span>]</span><span class="why">SSH open to the internet</span></p>
+      <p><span class="ln">13</span><span>  vpc_security_group_ids = [aws_security_group.web.id]</span></p>
+      <p><span class="ln">14</span><span>  iam_instance_profile   = aws_iam_instance_profile.app.name</span></p>
+      <p class="flag"><span class="ln">29</span><span>    Action = <span class="s">"s3:*"</span>, Resource = <span class="s">"*"</span></span><span class="why">every S3 action</span></p>
+      <p class="flag"><span class="ln">33</span><span><span class="k">resource</span> <span class="s">"aws_s3_bucket"</span> <span class="s">"records"</span> {</span><span class="why">no public access block</span></p>
+    </div>
+  </div>
+  <div class="stats">
+    <div class="glass stat rise d4"><b>17</b><span>failed Checkov checks on one 35-line file, listed one by one</span></div>
+    <div class="glass stat rise d5"><b>3 → 1</b><span>three findings that form one potential attack path</span></div>
+    <div class="glass stat rise d6"><b>0</b><span>automatic deployments: analysis runs before terraform apply</span></div>
+  </div>
+  <p class="brand">Cloud Security Analyzer · FYP</p><p class="page">page 04</p>
+</section>
+
+<!-- 5 · Introduction: overview -->
+<section class="slide slate" id="s5" aria-label="Introduction: project overview">
+  <div class="head">
+    <div><p class="crit rise">02 · <b>Introduction</b> · Overview</p><h2 class="h2 rise d1">How the analyzer <span class="soft">works</span></h2></div>
+    <p class="note rise d2">Rules detect. AI suggests. You approve. Rules re-check.</p>
+  </div>
+  <ol class="chev rise d2" aria-label="Seven-step workflow">
+    <li><p class="n">01</p><p class="t">Terraform</p><p class="w">write main.tf</p></li>
+    <li><p class="n">02</p><p class="t">Plan → JSON</p><p class="w">terraform show -json</p></li>
+    <li><p class="n">03</p><p class="t">Detect</p><p class="w">rules · severity · paths</p></li>
+    <li class="ai"><p class="n">04</p><p class="t">AI-assisted fix</p><p class="w">proposed patch</p></li>
+    <li><p class="n">05</p><p class="t">Review</p><p class="w">diff · accept or reject</p></li>
+    <li><p class="n">06</p><p class="t">Re-scan</p><p class="w">fmt · validate · rules</p></li>
+    <li><p class="n">07</p><p class="t">Deploy</p><p class="w">your decision</p></li>
+  </ol>
+  <p class="owners rise d3"><span>You</span><span>Analyzer</span><span>Analyzer</span><span class="ai">AI model</span><span>You</span><span>Analyzer</span><span>You</span></p>
+  <div class="ov-grid">
+    <div class="path-panel rise d4">
+      <h3>One potential attack path, from main.tf</h3>
+      <svg class="tree" viewBox="0 0 1340 414" role="img" aria-label="Infrastructure graph from main.tf. The potential attack path runs Internet, Security Group, EC2 instance, IAM role, S3 bucket; supporting resources are shown quietly.">
+<defs><marker id="tree-arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="3.4" markerHeight="3.4" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ef7777"/></marker></defs>
+<g class="t-sec">
+<line x1="244.0" y1="28.4" x2="331.9" y2="71.0"/>
+<line x1="303.2" y1="373.0" x2="388.1" y2="137.0"/>
+<line x1="309.0" y1="382.0" x2="511.0" y2="382.0"/>
+<line x1="529.0" y1="376.7" x2="616.3" y2="325.0"/>
+<line x1="681.0" y1="26.7" x2="837.0" y2="72.9"/>
+<line x1="757.4" y1="325.0" x2="896.0" y2="378.5"/>
+<line x1="1197.9" y1="325.0" x2="1174.4" y2="373.0"/>
+<line x1="1042.2" y1="71.0" x2="1176.0" y2="27.0"/>
+<line x1="914.0" y1="382.0" x2="1161.0" y2="382.0"/>
+<line x1="244.0" y1="24.0" x2="663.0" y2="24.0"/>
+</g><g class="t-path">
+<line x1="172.3" y1="258.0" x2="340.9" y2="144.0" marker-end="url(#tree-arrow)" style="--len:204;--i:0"/>
+<line x1="449.2" y1="138.0" x2="614.1" y2="252.0" marker-end="url(#tree-arrow)" style="--len:200;--i:1"/>
+<line x1="720.8" y1="258.0" x2="884.6" y2="144.0" marker-end="url(#tree-arrow)" style="--len:200;--i:2"/>
+<line x1="991.2" y1="138.0" x2="1156.1" y2="252.0" marker-end="url(#tree-arrow)" style="--len:200;--i:3"/>
+</g><g class="t-dots">
+<g><rect x="228" y="17" width="14" height="14" rx="3"/><text x="235" y="9" text-anchor="middle">aws_lb.front</text></g>
+<g><rect x="665" y="17" width="14" height="14" rx="3"/><text x="672" y="9" text-anchor="middle">aws_iam_policy.read</text></g>
+<g><rect x="1178" y="17" width="14" height="14" rx="3"/><text x="1185" y="9" text-anchor="middle">aws_db_instance.main</text></g>
+<g><rect x="293" y="375" width="14" height="14" rx="3"/><text x="300" y="410" text-anchor="middle">aws_vpc.main</text></g>
+<g><rect x="513" y="375" width="14" height="14" rx="3"/><text x="520" y="410" text-anchor="middle">aws_subnet.public</text></g>
+<g><rect x="898" y="375" width="14" height="14" rx="3"/><text x="905" y="410" text-anchor="middle">aws_cloudwatch_log_group</text></g>
+<g><rect x="1163" y="375" width="14" height="14" rx="3"/><text x="1170" y="410" text-anchor="middle">aws_kms_key.data</text></g>
+</g><g class="t-cards">
+<g class="t-card"><rect class="t-under" x="19.0" y="265.0" width="206" height="62" rx="9"/><rect x="19.0" y="261.0" width="206" height="62" rx="9"/><text class="t-t" x="35.0" y="287">Internet</text><text class="t-r" x="35.0" y="310">0.0.0.0/0</text></g>
+<g class="t-card"><rect class="t-under" x="297.0" y="77.0" width="206" height="62" rx="9"/><rect x="297.0" y="73.0" width="206" height="62" rx="9"/><text class="t-t" x="313.0" y="99">Security Group</text><text class="t-r" x="313.0" y="122">aws_security_group.web</text></g>
+<g class="t-card"><rect class="t-under" x="569.0" y="265.0" width="206" height="62" rx="9"/><rect x="569.0" y="261.0" width="206" height="62" rx="9"/><text class="t-t" x="585.0" y="287">EC2 instance</text><text class="t-r" x="585.0" y="310">aws_instance.app</text></g>
+<g class="t-card"><rect class="t-under" x="839.0" y="77.0" width="206" height="62" rx="9"/><rect x="839.0" y="73.0" width="206" height="62" rx="9"/><text class="t-t" x="855.0" y="99">IAM role</text><text class="t-r" x="855.0" y="122">aws_iam_role.app</text></g>
+<g class="t-card is-target"><rect class="t-under" x="1111.0" y="265.0" width="206" height="62" rx="9"/><rect x="1111.0" y="261.0" width="206" height="62" rx="9"/><text class="t-t" x="1127.0" y="287">S3 bucket</text><text class="t-r" x="1127.0" y="310">aws_s3_bucket.records</text></g>
+</g><g class="t-lab" style="--i:0"><rect x="203.6" y="186.0" width="106.0" height="30" rx="6"/><text x="256.6" y="205.5" text-anchor="middle">allows SSH</text></g><g class="t-lab" style="--i:1"><rect x="474.8" y="180.0" width="113.8" height="30" rx="6"/><text x="531.7" y="199.5" text-anchor="middle">attached to</text></g><g class="t-lab" style="--i:2"><rect x="734.1" y="186.0" width="137.2" height="30" rx="6"/><text x="802.7" y="205.5" text-anchor="middle">runs with role</text></g><g class="t-lab" style="--i:3"><rect x="1020.7" y="180.0" width="106.0" height="30" rx="6"/><text x="1073.7" y="199.5" text-anchor="middle">can access</text></g></svg>
+      <div class="path-foot"><p class="legend"><span class="lg-path"></span>potential attack path<span class="lg-sec"></span>other relationships in main.tf</p>
+      <p class="cap"><b>Ranked first:</b> one combined risk, above its separate findings. A potential path from configuration evidence, not a confirmed exploit.</p></div>
+    </div>
+    <div class="rules-box rules-slate rise d5">
+      <h3>Rule catalogue</h3>
+      <p class="big">10</p>
+      <p>declarative rules, each mapped to CIS / AWS guidance.</p>
+      <div class="tags"><span class="chip">S3 × 4</span><span class="chip">Security Groups × 3</span><span class="chip">IAM × 3</span></div>
+    </div>
+  </div>
+  <p class="brand">Cloud Security Analyzer · FYP</p><p class="page">page 05</p>
+</section>
+
+<!-- 6 · Objectives -->
+<section class="slide" id="s6" aria-label="Objectives">
+  <div class="head">
+    <div><p class="crit rise">03 · <b>Objectives</b></p><h2 class="h2 rise d1">Four objectives,<br /><span class="soft">one analyzer</span></h2></div>
+    <p class="note rise d2">Each objective answers one or more problem statements.</p>
+  </div>
+  <div class="objs" role="list">
+    <div class="glass obj is-sel rise d2" role="listitem" tabindex="0"><p class="n">01</p><div class="cube"></div><h3>Detect</h3><p>Identify selected AWS misconfigurations in Terraform with 10 rule-based checks.</p><p class="ans">Answers PS1</p><span class="arrow">›</span></div>
+    <div class="glass obj rise d3" role="listitem" tabindex="0"><p class="n">02</p><div class="cube"></div><h3>Connect</h3><p>Model resources, identities and permissions to find potential attack paths.</p><p class="ans">Answers PS1</p><span class="arrow">›</span></div>
+    <div class="glass obj rise d4" role="listitem" tabindex="0"><p class="n">03</p><div class="cube"></div><h3>Explain, prioritise &amp; fix</h3><p>Evidence-linked findings, contextual ranking, and AI-suggested fixes that the rules re-check.</p><p class="ans">Answers PS2 · PS3</p><span class="arrow">›</span></div>
+    <div class="glass obj rise d5" role="listitem" tabindex="0"><p class="n">04</p><div class="cube"></div><h3>Evaluate</h3><p>Labelled Terraform scenarios, compared with Checkov; optional read-only AWS check.</p><p class="ans">Measures O1–O3</p></div>
+  </div>
+  <div class="measure rise d6">
+    <span class="chip">8–10 labelled scenarios</span><span class="chip">≥3 clean · 2 tricky-but-safe · ≥2 attack paths</span><span class="chip">Precision · recall · F1</span><span class="chip">Fixes resolved on re-scan</span>
+  </div>
+  <p class="brand">Cloud Security Analyzer · FYP</p><p class="page">page 06</p>
+</section>
+
+<!-- 7 · Problem statement -->
+<section class="slide" id="s7" aria-label="Problem statement">
+  <div class="head">
+    <div><p class="crit rise">04 · <b>Problem Statement</b></p><h2 class="h2 rise d1">Three findings.<br /><span class="soft">One hidden path.</span></h2></div>
+    <p class="note rise d2">What existing scanners report, and what they leave to the reader.</p>
+  </div>
+  <div class="ps-visual">
+    <div class="rise d2">
+      <p class="iso-cap">Today · isolated findings</p>
+      <div class="iso">
+        <span class="chip red" style="left:0;top:10px"><i>✕</i>SSH open to 0.0.0.0/0</span>
+        <span class="chip red" style="left:150px;top:84px"><i>✕</i>s3:* on every resource</span>
+        <span class="chip red" style="left:40px;top:158px"><i>✕</i>No public access block</span>
+      </div>
+    </div>
+    <span class="big-arrow rise d3">→</span>
+    <div class="con rise d4">
+      <p class="con-cap">Needed · connected view</p>
+      <div class="nodes">
+        <div class="node"><b>Internet</b></div><div class="link"></div>
+        <div class="node bad"><b>SG</b></div><div class="link"></div>
+        <div class="node"><b>EC2</b></div><div class="link"></div>
+        <div class="node bad"><b>IAM role</b></div><div class="link"></div>
+        <div class="node bad target"><b>S3</b></div>
+      </div>
+    </div>
+  </div>
+  <div class="ps">
+    <div class="glass hover rise d4"><p class="stage">Detect</p><p class="id">PS1</p><h3>Limited contextual analysis of interconnected IaC configurations</h3><p>Rules check one resource at a time, not how they combine.</p></div>
+    <div class="glass hover rise d5"><p class="stage">Understand</p><p class="id">PS2</p><h3>Limited explainability of interconnected security findings</h3><p>A finding names the weakness, not its evidence or impact.</p></div>
+    <div class="glass hover rise d6"><p class="stage">Prioritise</p><p class="id">PS3</p><h3>Limited contextual prioritisation of combined cloud security risks</h3><p>Scored one by one, combined risk stays hidden.</p></div>
+  </div>
+  <p class="brand">Cloud Security Analyzer · FYP</p><p class="page">page 07</p>
+</section>
+
+<!-- 8 · Literature review: existing solutions -->
+<section class="slide" id="s8" aria-label="Literature review: existing solutions">
+  <div class="head">
+    <div><p class="crit rise">05 · <b>Literature Review</b> · Existing solutions</p><h2 class="h2 rise d1">What already<br /><span class="soft">exists</span></h2></div>
+    <p class="note rise d2">Official pages, captured 11 Nov 2026. Click a card to open the source.</p>
+  </div>
+  <div class="tools">
+    <a class="glass tool rise d2" href="https://www.checkov.io/" target="_blank" rel="noopener"><div class="shot"><img src="img/checkov.jpg" alt="checkov.io home page" /></div><h3>Checkov <small>IaC · pre-deploy</small></h3><dl><div><dt>Strength</dt><dd>Hundreds of built-in Terraform policies.</dd></div><div><dt>Gap</dt><dd class="gap">Findings reported one by one.</dd></div></dl></a>
+    <a class="glass tool rise d3" href="https://trivy.dev/" target="_blank" rel="noopener"><div class="shot"><img src="img/trivy.jpg" alt="trivy.dev home page" /></div><h3>Trivy <small>IaC · images</small></h3><dl><div><dt>Strength</dt><dd>Vulnerabilities, misconfigurations and secrets.</dd></div><div><dt>Gap</dt><dd class="gap">No relationship analysis in sources reviewed.</dd></div></dl></a>
+    <a class="glass tool rise d4" href="https://docs.prowler.com/user-guide/tutorials/prowler-app-attack-paths" target="_blank" rel="noopener"><div class="shot"><img src="img/prowler.jpg" alt="Prowler Attack Paths documentation" /></div><h3>Prowler <small>live account</small></h3><dl><div><dt>Strength</dt><dd>Graph-based attack paths for AWS.</dd></div><div><dt>Gap</dt><dd class="gap">Needs a deployed account.</dd></div></dl></a>
+    <a class="glass tool rise d5" href="https://docs.aws.amazon.com/securityhub/latest/userguide/potential-attack-path-graph.html" target="_blank" rel="noopener"><div class="shot"><img src="img/securityhub.jpg" alt="AWS Security Hub product page" /></div><h3>Security Hub <small>live account</small></h3><dl><div><dt>Strength</dt><dd>Correlates and prioritises AWS risks.</dd></div><div><dt>Gap</dt><dd class="gap">Works after deployment.</dd></div></dl></a>
+  </div>
+  <p class="brand">Cloud Security Analyzer · FYP</p><p class="page">page 08</p>
+</section>
+
+<!-- 9 · Literature review: related work + gap -->
+<section class="slide" id="s9" aria-label="Literature review: related work">
+  <div class="head">
+    <div><p class="crit rise">05 · <b>Literature Review</b> · Related work</p><h2 class="h2 rise d1">Research that<br /><span class="soft">supports it</span></h2></div>
+    <p class="note rise d2">Three verified papers (DOI checked). Click to open.</p>
+  </div>
+  <div class="papers">
+    <a class="glass paper rise d2" href="https://doi.org/10.34218/IJCST_02_01_002" target="_blank" rel="noopener"><img src="img/paper-movva.jpg" alt="First page of Movva et al. 2025" /><div><p class="yr">Movva et al. · 2025</p><h3>IaC Security and Drift Detection Using LLMs</h3><p>Context-dependent misconfigurations are missed by fixed rules.</p><p class="lim"><b>Limit</b> its 31% gain is paper-specific</p></div></a>
+    <a class="glass paper rise d3" href="https://doi.org/10.33564/IJEAST.2026.v11i05.010" target="_blank" rel="noopener"><img src="img/paper-keerthana.jpg" alt="First page of Keerthana 2026" /><div><p class="yr">Keerthana · 2026</p><h3>Static Analysis and LLM-Based Review for Terraform</h3><p>LLM review adds explanations and suggested fixes to Checkov.</p><p class="lim"><b>Limit</b> exploratory, 12 Terraform files</p></div></a>
+    <a class="glass paper rise d4" href="https://doi.org/10.3390/computers15070409" target="_blank" rel="noopener"><img src="img/mdpi.jpg" alt="MDPI article page for Almarri et al. 2026" /><div><p class="yr">Almarri et al. · 2026</p><h3>IAM Misconfigurations in Cloud Databases</h3><p>Excess permissions lead to privilege escalation: IAM is in scope.</p><p class="lim"><b>Limit</b> focused on cloud databases</p></div></a>
+  </div>
+  <div class="glass gapbar rise d5">
+    <h3>The gap this project fills</h3>
+    <ol>
+      <li><b>Before deployment</b><span>Terraform plan, not a live account</span></li>
+      <li><b>Connected paths</b><span>findings linked by evidence</span></li>
+      <li><b>Explained &amp; ranked</b><span>why it matters, what first</span></li>
+      <li><b>AI fix, re-checked</b><span>suggested, approved, re-scanned</span></li>
+    </ol>
+  </div>
+  <p class="brand">Cloud Security Analyzer · FYP</p><p class="page">page 09</p>
+</section>
+
+<!-- 10 · Stakeholder collaboration -->
+<section class="slide" id="s10" aria-label="Stakeholder collaboration initiative">
+  <div class="head">
+    <div><p class="crit rise">06 · <b>Stakeholder Collaboration</b></p><h2 class="h2 rise d1">Who shapes<br /><span class="soft">the work</span></h2></div>
+    <p class="note rise d2">Status as of November 2026.</p>
+  </div>
+  <div class="people">
+    <article class="glass person rise d2">
+      <div class="portrait lead"><span class="chip status ok"><i>✓</i>Supervisor</span><span class="av">FA</span></div>
+      <h3>Dr. Fairuz Amalina Narudin</h3><p class="role">FYP supervisor</p>
+      <dl><div><dt>Role</dt><dd>Academic guidance on scope, rule selection and evaluation design.</dd></div></dl>
+    </article>
+    <article class="glass person rise d3">
+      <div class="portrait lead"><span class="chip status ok"><i>✓</i>Collaborator</span><span class="av">LC</span></div>
+      <h3>Lejiend Community</h3><p class="role">Tech community · collaborator</p>
+      <dl><div><dt>Input sought</dt><dd>Practitioner feedback on test scenarios and on how clear the explanations are.</dd></div></dl>
+      <p class="links"><a href="https://lejiend.com/community" target="_blank" rel="noopener">lejiend.com ↗</a><a href="https://www.linkedin.com/in/lejiend/" target="_blank" rel="noopener">Owner ↗</a></p>
+    </article>
+    <article class="glass person rise d4">
+      <div class="portrait lead"><span class="chip status ok"><i>✓</i>Responded</span><span class="av">FH</span></div>
+      <h3>Farhan Helmy</h3><p class="role">AI &amp; full-stack engineer</p>
+      <dl><div><dt>Input given</dt><dd class="given">Suggested the AI-assisted remediation feature.</dd></div><div><dt>Input sought</dt><dd>Feedback on the AI fix workflow and the report.</dd></div></dl>
+      <p class="links"><a href="https://farhanhelmy.com" target="_blank" rel="noopener">farhanhelmy.com ↗</a><a href="https://www.linkedin.com/in/muhammad-farhan-helmy/" target="_blank" rel="noopener">LinkedIn ↗</a></p>
+    </article>
+    <article class="glass person rise d5">
+      <div class="portrait"><span class="chip status pot"><i></i>Potential</span><span class="av">+</span></div>
+      <h3>Cloud security practitioners</h3><p class="role">Industry perspective</p>
+      <dl><div><dt>Input sought</dt><dd>Common real-world AWS misconfiguration patterns.</dd></div></dl>
+    </article>
+  </div>
+  <p class="collab-line rise d6"><span class="chip ok-chip"><i>✓</i>Done · AI fix idea from industry input</span><span class="chip"><i>›</i>Planned · practitioners review test scenarios</span><span class="chip"><i>›</i>Planned · clarity check of explanations</span></p>
+  <p class="brand">Cloud Security Analyzer · FYP</p><p class="page">page 10</p>
+</section>
+
+<!-- 11 · References -->
+<section class="slide" id="s11" aria-label="References">
+  <div class="head">
+    <div><p class="crit rise">References</p><h2 class="h2 rise d1">Sources</h2></div>
+    <p class="note rise d2">DOIs verified against Crossref, 11 Nov 2026.</p>
+  </div>
+  <div class="refs">
+    <div class="rise d2">
+      <h3>Research papers</h3>
+      <ol>
+        <li>Movva, D. K., Pullikallu, A. R., &amp; Sugasi, M. K. (2025). <a href="https://doi.org/10.34218/IJCST_02_01_002">Infrastructure-as-Code Security and Drift Detection Using LLMs</a>. <i>International Journal of Computer Security, 2</i>(1), 9–25.</li>
+        <li>Keerthana, K. S. (2026). <a href="https://doi.org/10.33564/IJEAST.2026.v11i05.010">Static Analysis and LLM-Based Review for Terraform Security and Cost Issues: An Exploratory Comparative Study</a>. <i>IJEAST, 11</i>(5), 95–99.</li>
+        <li>Almarri, A., Alawadh, A., Alsayed, M., &amp; Rafique, M. A. (2026). <a href="https://doi.org/10.3390/computers15070409">Analyzing Identity and Access Management (IAM) Misconfigurations in Cloud Databases</a>. <i>Computers, 15</i>(7), 409.</li>
+      </ol>
+    </div>
+    <div class="rise d3">
+      <h3>Tools, documentation &amp; standards</h3>
+      <ol>
+        <li><a href="https://www.checkov.io/">Checkov</a> · <a href="https://trivy.dev/docs/latest/guide/scanner/misconfiguration/">Trivy misconfiguration scanning</a></li>
+        <li><a href="https://docs.prowler.com/user-guide/tutorials/prowler-app-attack-paths">Prowler Attack Paths</a> · <a href="https://docs.aws.amazon.com/securityhub/latest/userguide/potential-attack-path-graph.html">AWS Security Hub attack path graph</a></li>
+        <li><a href="https://developer.hashicorp.com/terraform/internals/json-format">Terraform JSON output format</a></li>
+        <li><a href="https://www.cisecurity.org/benchmark/amazon_web_services">CIS Amazon Web Services Foundations Benchmark v7.0.0</a></li>
+      </ol>
+    </div>
+  </div>
+  <p class="brand">Cloud Security Analyzer · FYP</p><p class="page">page 11</p>
+</section>
+
+<!-- 12 · Thank you -->
+<section class="slide" id="s12" aria-label="Thank you">
+  <div class="thanks">
+    <div class="torus spin" style="width:900px;height:900px;left:50%;top:50%;translate:-50% -50%;opacity:.55"></div>
+    <div>
+      <h2 class="rise">Thank you</h2>
+      <p class="rise d1">Questions and feedback are welcome.</p>
+      <div class="flow rise d2"><span class="chip">Detect</span><span class="chip">Connect</span><span class="chip">Explain</span><span class="chip">Prioritise</span><span class="chip blue"><i>✦</i>AI-assisted fix</span><span class="chip">Validate</span></div>
+    </div>
+  </div>
+  <p class="brand">Cloud Security Analyzer · FYP</p><p class="page">page 12</p>
+</section>
+</main>
+
+<p class="rotate web-only" role="note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M3 9a9 9 0 0 1 3-5M21 15a9 9 0 0 1-3 5"/></svg>Rotate your phone for the full slide</p>
+<nav class="bar web-only" aria-label="Deck controls">
+  <span class="prog" id="prog"></span>
+  <span class="count" id="count">01 / 12</span>
+  <span class="ttl" id="ttl"></span>
+  <span class="sp"></span>
+  <div class="dots" id="dots"></div>
+  <a href="FYP-Submission-Deck.pdf" download>PDF</a>
+  <button id="fs" title="Fullscreen (F)">Fullscreen</button>
+  <button id="prev" aria-label="Previous slide">←</button>
+  <button id="next" class="primary" aria-label="Next slide">Next →</button>
+</nav>
+
+<script>
+(() => {
+  const print = new URLSearchParams(location.search).has('print')
+  if (print) { document.documentElement.classList.add('print'); document.fonts.ready.then(() => { window.__ready = true }); return }
+  const slides = [...document.querySelectorAll('.slide')]
+  const N = slides.length
+  const dots = document.getElementById('dots')
+  slides.forEach((s, i) => { const b = document.createElement('button'); b.setAttribute('aria-label', `Go to slide ${i + 1}`); b.onclick = () => go(i); dots.appendChild(b) })
+  let i = Math.max(0, Math.min(N - 1, (parseInt(location.hash.replace(/\D/g, ''), 10) || 1) - 1))
+  const fit = () => {
+    const s = Math.min(innerWidth / 1920, (innerHeight - 56) / 1080)
+    slides.forEach((el) => (el.style.transform = `translate(-50%, -50%) scale(${s})`))
+  }
+  function go(n) {
+    i = Math.max(0, Math.min(N - 1, n))
+    slides.forEach((s, k) => { s.classList.toggle('is-on', k === i); s.inert = k !== i; s.setAttribute('aria-hidden', k !== i) })
+    ;[...dots.children].forEach((d, k) => d.classList.toggle('is-on', k === i))
+    document.getElementById('count').textContent = `${String(i + 1).padStart(2, '0')} / ${N}`
+    document.getElementById('ttl').textContent = slides[i].getAttribute('aria-label')
+    document.getElementById('prog').style.width = `${((i + 1) / N) * 100}%`
+    document.getElementById('prev').disabled = i === 0
+    document.getElementById('next').disabled = i === N - 1
+    history.replaceState(null, '', `#s${i + 1}`)
+  }
+  document.getElementById('next').onclick = () => go(i + 1)
+  document.getElementById('prev').onclick = () => go(i - 1)
+  document.getElementById('fs').onclick = () => (document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.())
+  addEventListener('keydown', (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return
+    if (['ArrowRight', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); go(i + 1) }
+    else if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); go(i - 1) }
+    else if (e.key === 'Home') go(0)
+    else if (e.key === 'End') go(N - 1)
+    else if (e.key === 'f' || e.key === 'F') document.getElementById('fs').click()
+  })
+  addEventListener('hashchange', () => { const n = parseInt(location.hash.replace(/\D/g, ''), 10); if (n) go(n - 1) })
+  // in-deck links (#s4 …) jump without scrolling
+  document.querySelectorAll('a[href^="#s"]').forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); go(parseInt(a.getAttribute('href').slice(2), 10) - 1) }))
+  // objectives: pick one to highlight it
+  document.querySelectorAll('.obj').forEach((o) => {
+    const pick = () => { document.querySelectorAll('.obj').forEach((x) => x.classList.toggle('is-sel', x === o)) }
+    o.addEventListener('click', pick); o.addEventListener('mouseenter', pick)
+    o.addEventListener('keydown', (e) => { if (e.key === 'Enter') pick() })
+  })
+  // swipe
+  let x0 = null
+  addEventListener('touchstart', (e) => (x0 = e.touches[0].clientX), { passive: true })
+  addEventListener('touchend', (e) => { if (x0 == null) return; const dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 60) go(i + (dx < 0 ? 1 : -1)); x0 = null }, { passive: true })
+  addEventListener('resize', fit); fit(); go(i)
+})()
+</script>
+</body>
+</html>
