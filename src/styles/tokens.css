@@ -19,7 +19,8 @@
 }
 
 /* One stage. Colour has jobs: red = risk, blue = proposed analyzer, amber = planned / potential,
-   green = passed / confirmed, cyan = Terraform input. */
+   green = passed / confirmed, cyan = Terraform input,
+   violet = the AI model (slide 7 only). */
 .deck,
 .overview,
 .print-deck {
@@ -36,10 +37,12 @@
   --c-amber: #f3bd69;
   --c-red: #ef7777;
   --c-green: #7bc7a0;
+  --c-violet: #b9a3ff; /* the AI model's step only */
   --t-blue: rgb(123 167 255 / 0.14);
   --t-red: rgb(239 119 119 / 0.14);
   --t-amber: rgb(243 189 105 / 0.13);
   --t-green: rgb(123 199 160 / 0.14);
+  --t-violet: rgb(185 163 255 / 0.14);
   /* real-software surfaces */
   --chrome: #e8eaee;
   --chrome-ink: #3b4250;

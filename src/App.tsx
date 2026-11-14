@@ -296,7 +296,7 @@ function Deck() {
         <div className="overview" role="dialog" aria-modal="true" aria-label="Slides and sources" ref={overviewRef} onClick={(e) => e.target === e.currentTarget && closeOverview()}>
           <div className="overview-inner">
             <div className="overview-head">
-              <h2>8 slides · sources</h2>
+              <h2>{TOTAL} slides · sources</h2>
               <p className="overview-keys">
                 <kbd>←</kbd> <kbd>→</kbd> navigate · <kbd>Space</kbd> next · <kbd>F</kbd> fullscreen · <kbd>O</kbd> this panel
               </p>

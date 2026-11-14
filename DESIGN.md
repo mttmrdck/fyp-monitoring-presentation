@@ -1,6 +1,6 @@
 # Design — interactive research showcase
 
-The deck shows the real thing: real Terraform, real scanner output, real tool and paper pages in browser windows, and a relationship path the lecturer can click through. Eight slides, one dominant visual each.
+The deck shows the real thing: real Terraform, real scanner output, real tool and paper pages in browser windows, and a relationship path the lecturer can click through. Nine slides, one dominant visual each.
 
 ## Stage and canvas
 
@@ -19,7 +19,7 @@ The deck shows the real thing: real Terraform, real scanner output, real tool an
 
 ## Colour has jobs
 
-Red = risk and the potential path · blue = the proposed analyzer and emphasis · amber = planned / mock-up · green = passed checks / confirmed · cyan reserved for input.
+Red = risk and the potential path · blue = the proposed analyzer and emphasis · violet = the AI model (slide 7, the O3 pipeline stage, Fix/Validate on the summary) · amber = planned / mock-up · green = passed checks / confirmed · cyan reserved for input.
 
 ## Type
 

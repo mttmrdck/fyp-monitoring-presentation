@@ -11,7 +11,7 @@ const icons = [GraduationCap, Wrench, Users]
 export function S7Stakeholders() {
   const c = collaborator
   return (
-    <Slide n={7} criterion="Stakeholder collaboration initiative" className="s7">
+    <Slide n={8} criterion="Stakeholder collaboration initiative" className="s7">
       <h2 className="h2">A community collaborator, and who else shapes the work.</h2>
       <div className="s7-grid">
         <article className="collab" aria-label="Collaborator: Lejiend Community">
@@ -118,7 +118,7 @@ export function References({ compact = false }: { compact?: boolean }) {
 
 export function S8Summary() {
   return (
-    <Slide n={8} criterion="Summary" className="s8">
+    <Slide n={9} criterion="Summary" className="s8">
       <ol className="s8-steps">
         {summarySteps.map((x, i) => (
           <li key={x.k}>

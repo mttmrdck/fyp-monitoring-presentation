@@ -1,4 +1,4 @@
-// Generates the 16-page 1920×1080 PDF from the built site's static print view (?pdf).
+// Generates the 9-page 1920×1080 PDF from the built site's static print view (?pdf).
 // Usage: npm run build && npm run pdf
 import { chromium } from 'playwright-core'
 import { copyFile, mkdir } from 'node:fs/promises'
@@ -22,7 +22,7 @@ try {
   await page.goto(`${server.url}/?pdf`, { waitUntil: 'networkidle' })
   await page.waitForFunction(() => window.__deckReady === true, null, { timeout: 20000 })
   const pages = await page.locator('.print-page').count()
-  if (pages !== 8) throw new Error(`Expected 8 slides, found ${pages}`)
+  if (pages !== 9) throw new Error(`Expected 9 slides, found ${pages}`)
   if (errors.length) throw new Error(`Page errors: ${errors.join('; ')}`)
   const out = resolve(root, FILE)
   await page.pdf({ path: out, width: '1920px', height: '1080px', printBackground: true, preferCSSPageSize: true })

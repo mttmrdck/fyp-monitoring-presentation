@@ -1,4 +1,4 @@
-// End-to-end checks for the 8-slide website and its PDF. Usage: npm run build:all && npm test
+// End-to-end checks for the 9-slide website and its PDF. Usage: npm run build:all && npm test
 import { chromium } from 'playwright-core'
 import { readFile, stat } from 'node:fs/promises'
 import { resolve } from 'node:path'
@@ -32,7 +32,7 @@ try {
 
   /* Structure */
   await go(1)
-  ok('deck has 8 slides (no more)', (await page.locator('.slide').count()) === 8)
+  ok('deck has 9 slides', (await page.locator('.slide').count()) === 9)
   const crit = await page.evaluate(() => [...document.querySelectorAll('.slide-foot-c')].map((e) => e.textContent).join(' | '))
   for (const c of ['Project title', 'Introduction', 'Objectives', 'Problem statement', 'Literature review', 'Stakeholder collaboration']) {
     ok(`criterion covered: ${c}`, crit.includes(c))
@@ -42,7 +42,7 @@ try {
   await key('ArrowRight')
   ok('→ advances to slide 2', (await hash()) === '#/2')
   await key('End')
-  ok('End → slide 8', (await hash()) === '#/8')
+  ok('End → slide 9', (await hash()) === '#/9')
   await key('Home')
   ok('Home → slide 1', (await hash()) === '#/1')
   await key('o')
@@ -114,8 +114,36 @@ try {
   ok('and shows the planned report', (await active('.rep-t').innerText()).includes('Internet → S3'))
   ok('report is labelled as a mock-up', (await active('.tag--amber').innerText()).includes('mock-up'))
 
-  /* Stakeholders honesty */
+  /* AI-assisted remediation */
   await go(7)
+  ok('slide 7 shows the 7-step remediation flow', (await active('.rx-step').count()) === 7)
+  ok('remediation starts on the existing analyzer (steps 1–3 lit)', (await active('.rx-step.is-lit').count()) === 3)
+  ok('AI step is owned by the AI model', (await active('.rx-step--ai').innerText()).includes('AI-assisted fix'))
+  await key('ArrowRight')
+  ok('Next lights the AI-assisted fix', (await active('.rx-step--ai.is-lit').count()) === 1)
+  ok('default mode (by severity) selects the two High findings', (await active('.rx-hunk').count()) === 2)
+  await active('.rx-modes button', { hasText: 'Fix all' }).click()
+  await page.waitForTimeout(150)
+  ok('Fix all proposes three changes', (await active('.rx-hunk').count()) === 3)
+  await active('.rx-modes button', { hasText: 'Breaks a path' }).click()
+  await page.waitForTimeout(150)
+  ok('Breaks a path picks only the SSH fix', (await active('.rx-hunk').count()) === 1 && (await active('.rx-hunk').innerText()).includes('203.0.113.0/24'))
+  await active('.rx-box').nth(2).click()
+  await page.waitForTimeout(150)
+  ok('ticking a finding switches to Selected', (await active('.rx-modes button[aria-pressed="true"]').innerText()) === 'Selected')
+  await active('.rx-btn--no').click()
+  await page.waitForTimeout(350)
+  ok('Reject leaves main.tf unchanged', (await active('.rx-term').innerText()).includes('unchanged'))
+  await active('.rx-btn--ok').click()
+  await page.waitForTimeout(350)
+  const scan = await active('.rx-term').innerText()
+  ok('Accept runs fmt, validate and the same rules', scan.includes('terraform fmt -check') && scan.includes('terraform validate') && scan.includes('resolved'))
+  ok('tool never applies', (await active('.rx-deploy').innerText()).includes('never runs terraform apply'))
+  await key('ArrowRight')
+  ok('then moves to slide 8', (await hash()) === '#/8')
+
+  /* Stakeholders honesty */
+  await go(8)
   ok('stakeholders: Lejiend Community leads as collaborator', (await active('.collab-name').innerText()).includes('Lejiend Community') && (await active('.collab-status').innerText()).toLowerCase().includes('confirmed'))
   ok('stakeholders: Farhan Helmy marked contacted', (await active('.other--contacted').innerText()).includes('Farhan Helmy'))
   ok('stakeholders: Lejiend owner LinkedIn linked', (await active('.collab-links a[href="https://www.linkedin.com/in/lejiend/"]').count()) === 1)
@@ -129,7 +157,7 @@ try {
 
   /* Mobile */
   const phone = await browser.newPage({ viewport: { width: 390, height: 844 } })
-  for (const n of [2, 3, 5, 6]) {
+  for (const n of [2, 3, 5, 6, 7]) {
     await phone.goto(`${server.url}/#/${n}`)
     await phone.waitForTimeout(250)
     ok(`phone slide ${n}: flow layout, no sideways scroll`, (await phone.locator('.deck--flow').count()) === 1 && (await phone.evaluate(() => document.querySelector('.stage').scrollWidth <= innerWidth)))
@@ -140,8 +168,8 @@ try {
   const print = await browser.newPage({ viewport: { width: 1920, height: 1080 } })
   await print.goto(`${server.url}/?pdf`, { waitUntil: 'networkidle' })
   await print.waitForFunction(() => window.__deckReady === true)
-  ok('print view renders 8 slides', (await print.locator('.print-page').count()) === 8)
-  ok('print view: no interactive controls', (await print.locator('.print-page .seg, .print-page .btn, .print-page .code-flag, .print-page .rep-wait').count()) === 0)
+  ok('print view renders 9 slides', (await print.locator('.print-page').count()) === 9)
+  ok('print view: no interactive controls', (await print.locator('.print-page .seg, .print-page .btn, .print-page .code-flag, .print-page .rep-wait, .print-page .rx-btn').count()) === 0)
   const text = (await print.locator('.print-deck').innerText()).toLowerCase()
   for (const needle of [
     'limited contextual analysis of interconnected iac configurations',
@@ -170,6 +198,10 @@ try {
     'lejiend community',
     'farhan helmy',
     'iam_instance_profile → aws_iam_instance_profile.app',
+    'ai-assisted remediation',
+    'never runs terraform apply',
+    'reject → main.tf unchanged',
+    'terraform validate',
   ]) {
     ok(`PDF shows "${needle.slice(0, 50)}"`, text.includes(needle))
   }
@@ -191,7 +223,7 @@ try {
 
   const pdfPath = resolve('dist/FYP-Monitoring-Presentation.pdf')
   const pdf = await PDFDocument.load(await readFile(pdfPath))
-  ok('PDF has 8 pages', pdf.getPageCount() === 8)
+  ok('PDF has 9 pages', pdf.getPageCount() === 9)
   ok('PDF pages are 16:9 (1920×1080 px)', pdf.getPages().every((p) => Math.round(p.getWidth()) === 1440 && Math.round(p.getHeight()) === 810))
   let uris = 0
   for (const p of pdf.getPages()) {

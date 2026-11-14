@@ -3,6 +3,9 @@ import { ArrowUpRight } from 'lucide-react'
 
 export type Mode = 'web' | 'pdf'
 
+/** Slide count shown in every footer. Keep in step with src/slides/index.ts. */
+export const TOTAL_SLIDES = 9
+
 export type SlideProps = {
   /** 'pdf' renders every reveal in its final state. */
   mode: Mode
@@ -19,7 +22,7 @@ export function Slide({ n, criterion, className = '', children }: { n: number; c
       <footer className="slide-foot" aria-hidden="true">
         <span className="slide-foot-n">
           {String(n).padStart(2, '0')}
-          <span>/08</span>
+          <span>/{String(TOTAL_SLIDES).padStart(2, '0')}</span>
         </span>
         <span className="slide-foot-c">{criterion}</span>
         <span className="slide-foot-p">Cloud Risk Analyzer · FYP monitoring</span>

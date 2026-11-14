@@ -5,10 +5,10 @@ import { ExtLink } from '../components/ui'
 import { capturedOn, sources, type Source } from '../content/sources'
 import { papers } from '../data/references'
 
-const DIRECTION_SHORT = 'Terraform detection + relationships + evidence + prioritisation: a focused combination, measured against Checkov.'
+const DIRECTION_SHORT = 'Terraform detection + relationships + evidence + prioritisation, with AI-suggested fixes re-checked by the rules. Measured against Checkov.'
 
 const DIRECTION =
-  'A focused combination: selected Terraform misconfiguration detection + resource and permission relationships + evidence-linked explanations + contextual prioritisation. Measured against Checkov, not claimed as unprecedented.'
+  'A focused combination, not a new technique: detection + relationships + evidence + prioritisation, plus AI-suggested fixes that the rules re-check. Measured against Checkov.'
 
 function NotCaptured({ s }: { s: Source }) {
   return (

@@ -124,7 +124,7 @@ export function S4Objectives({ mode, step, setStep }: SlideProps) {
       </h2>
       <div className="pipe" aria-label="Proposed analyzer">
         {pipeline.map((p, i) => (
-          <div key={p.id} className={`pipe-stage ${lit(p.id) ? 'is-lit' : ''}`}>
+          <div key={p.id} className={`pipe-stage ${p.id === 'fix' ? 'pipe-stage--ext' : ''} ${lit(p.id) ? 'is-lit' : ''}`}>
             <p className="pipe-t">{p.title}</p>
             <p className="pipe-d">{p.detail}</p>
             {i < pipeline.length - 1 ? <span className="pipe-arrow" aria-hidden="true" /> : null}

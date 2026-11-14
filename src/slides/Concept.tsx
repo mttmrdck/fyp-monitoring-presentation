@@ -50,7 +50,7 @@ export function S6Concept({ mode, step, setStep }: SlideProps) {
             </div>
           </Win>
           <p className="s6-note">
-            Real output from {checkovRun.version} on the main.tf from slide 2, {checkovRun.date}. The findings are right, but each is reported on its own.
+            Real {checkovRun.version} output on slide 2's main.tf ({checkovRun.date}). Correct, but each finding stands alone.
           </p>
         </section>
 
@@ -115,6 +115,7 @@ export function S6Concept({ mode, step, setStep }: SlideProps) {
                       <dd>{plannedReport.fix}</dd>
                     </div>
                   </dl>
+                  <p className="rep-next">Fix with AI → slide 7</p>
                 </motion.div>
               ) : (
                 <motion.p key="w" className="rep-wait" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>

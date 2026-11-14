@@ -1,5 +1,5 @@
 /**
- * Single source of truth for the 8-slide deck. The website reveals it; the PDF prints all of it.
+ * Single source of truth for the 9-slide deck. The website reveals it; the PDF prints all of it.
  * Sources: FYP proposal (17–18 Oct 2026), verified references, a real Checkov 3.3.29 run (11 Nov 2026).
  */
 
@@ -73,9 +73,9 @@ export const terraform: { text: string; flag?: Flag['id'] }[] = [
 ]
 
 export const introStatements = [
-  'Cloud infrastructure is now written as code: Terraform files declare AWS resources before they exist.',
-  'A mistake in the file is deployed every time it is applied, and scanners usually report each mistake on its own.',
-  'This project analyses selected Terraform before deployment and explains how weaknesses connect.',
+  'Terraform declares AWS resources in code, before they exist.',
+  'A mistake in the file is deployed every time it is applied.',
+  'Scanners list mistakes one by one. This project shows how they connect, before deployment.',
 ]
 
 export const fourQuestions = [
@@ -83,6 +83,7 @@ export const fourQuestions = [
   { k: 'Explain', q: 'Why is it risky?' },
   { k: 'Connect', q: 'How can weaknesses connect?' },
   { k: 'Prioritise', q: 'What should be fixed first?' },
+  { k: 'Fix', q: 'What change resolves it?' },
 ]
 
 /* ───── Slide 3 · Problem statement ───── */
@@ -93,27 +94,27 @@ export const problems = [
     stage: 'Detect',
     short: 'Detected weaknesses stay unconnected',
     title: 'Limited contextual analysis of interconnected IaC configurations',
-    text: 'Rule-based IaC scanners detect known patterns, but coverage depends on the rules implemented. Individual findings may not show how resources, identities and permissions interact to form a broader risk.',
+    text: 'Scanners match known patterns one resource at a time. They rarely show how resources, identities and permissions combine into a broader risk.',
   },
   {
     id: 'PS2',
     stage: 'Understand',
     short: 'The reader must work out why it matters',
     title: 'Limited explainability of interconnected security findings',
-    text: 'A finding may name a weakness, yet the reader still has to work out the evidence, the wider implication and how related configurations contribute to the risk.',
+    text: 'A finding names the weakness. The reader still has to work out the evidence and why it matters.',
   },
   {
     id: 'PS3',
     stage: 'Prioritise',
     short: 'Combined risk is not ranked as one',
     title: 'Limited contextual prioritisation of combined cloud security risks',
-    text: 'The same weakness can matter more or less depending on surrounding resources and permissions. Scoring weaknesses independently may not communicate combined risk.',
+    text: 'The same weakness matters more or less depending on its surroundings. Scoring each one alone hides combined risk.',
   },
 ]
 
 /* ───── Slide 4 · Objectives ───── */
 
-export type Part = 'input' | 'rules' | 'graph' | 'explain' | 'report' | 'eval'
+export type Part = 'input' | 'rules' | 'graph' | 'explain' | 'report' | 'fix' | 'eval'
 
 export const objectives: { id: string; short: string; text: string; parts: Part[]; answers?: string }[] = [
   {
@@ -134,7 +135,7 @@ export const objectives: { id: string; short: string; text: string; parts: Part[
     id: 'O3',
     short: 'Explain with evidence, then prioritise',
     text: 'To develop an explainable risk assessment approach that provides evidence-linked findings, remediation guidance and contextual risk prioritisation.',
-    parts: ['explain', 'report'],
+    parts: ['explain', 'report', 'fix'],
     answers: 'PS2 · PS3',
   },
   {
@@ -151,6 +152,7 @@ export const pipeline: { id: Part; title: string; detail: string }[] = [
   { id: 'graph', title: 'Relationship graph', detail: 'resources · identities · permissions' },
   { id: 'explain', title: 'Explain & prioritise', detail: 'evidence · fix · ranking' },
   { id: 'report', title: 'CLI / HTML report', detail: 'read before deploying' },
+  { id: 'fix', title: 'AI-assisted fix', detail: 'suggest · approve · re-scan' },
 ]
 
 export const evaluation = [
@@ -196,7 +198,7 @@ export const plannedReport = {
   title: 'Potential attack path: Internet → S3 bucket',
   why: 'An internet-reachable instance runs with a role that can read and write every S3 bucket, including app-records.',
   rank: 'Ranked above its four individual findings, as one combined risk.',
-  fix: 'Break any one link: restrict SSH, detach the role, or scope the policy to the bucket it needs.',
+  fix: 'Break a link: restrict SSH or detach the role. Scoping the policy limits what the role can reach.',
   caveat: 'A potential path built from configuration evidence, not a confirmed exploit.',
 }
 
@@ -254,8 +256,99 @@ export const statusInfo: Record<Status, { label: string; note: string }> = {
 /* ───── Slide 8 · Summary ───── */
 
 export const summarySteps = [
-  { k: 'Detect', d: 'selected misconfigurations in Terraform' },
-  { k: 'Connect', d: 'resources, identities and permissions' },
-  { k: 'Explain', d: 'evidence and remediation' },
+  { k: 'Detect', d: 'misconfigurations in Terraform' },
+  { k: 'Connect', d: 'resources, identities, permissions' },
+  { k: 'Explain', d: 'evidence for every link' },
   { k: 'Prioritise', d: 'combined risk first' },
+  { k: 'Fix', d: 'AI suggests, you approve' },
+  { k: 'Validate', d: 'the same rules re-check' },
 ]
+
+/* ───── Slide 7 · AI-assisted remediation (planned extension of O3's remediation guidance) ───── */
+
+export type Owner = 'you' | 'analyzer' | 'ai'
+
+export const ownerLabel: Record<Owner, string> = { you: 'You', analyzer: 'Analyzer', ai: 'AI model' }
+
+/** The full workflow. `phase` is the reveal step that lights it on the website. */
+export const fixFlow: { title: string; who: Owner; d: string; phase: number }[] = [
+  { title: 'Terraform', who: 'you', d: 'write main.tf', phase: 0 },
+  { title: 'Plan → JSON', who: 'analyzer', d: 'terraform show -json', phase: 0 },
+  { title: 'Detect', who: 'analyzer', d: 'rules · severity · paths', phase: 0 },
+  { title: 'AI-assisted fix', who: 'ai', d: 'findings + main.tf → patch', phase: 1 },
+  { title: 'Review', who: 'you', d: 'diff + reason · accept?', phase: 2 },
+  { title: 'Validate & re-scan', who: 'analyzer', d: 'fmt · validate · same rules', phase: 3 },
+  { title: 'Deploy', who: 'you', d: 'your decision', phase: 3 },
+]
+
+export type FixMode = 'all' | 'selected' | 'severity' | 'paths'
+
+export const fixModes: { id: FixMode; label: string }[] = [
+  { id: 'all', label: 'Fix all' },
+  { id: 'selected', label: 'Selected' },
+  { id: 'severity', label: 'By severity' },
+  { id: 'paths', label: 'Breaks a path' },
+]
+
+/** The three findings from slide 2's main.tf, with the change the AI would propose for each. */
+export const fixFindings: {
+  id: Flag['id']
+  title: string
+  resource: string
+  severity: 'High' | 'Medium'
+  breaksPath: boolean
+  at: string
+  minus: string[]
+  plus: string[]
+  why: string
+}[] = [
+  {
+    id: 'sg',
+    title: 'SSH open to 0.0.0.0/0',
+    resource: 'aws_security_group.web',
+    severity: 'High',
+    breaksPath: true,
+    at: 'main.tf:6',
+    minus: ['    cidr_blocks = ["0.0.0.0/0"]'],
+    plus: ['    cidr_blocks = ["203.0.113.0/24"]  # admin range'],
+    why: 'SSH only from a trusted range, so the internet link of the path is gone.',
+  },
+  {
+    id: 'iam',
+    title: 's3:* on every resource',
+    resource: 'aws_iam_role_policy.app',
+    severity: 'High',
+    breaksPath: false,
+    at: 'main.tf:29',
+    minus: ['    Effect = "Allow", Action = "s3:*", Resource = "*"'],
+    plus: ['    Effect = "Allow", Action = ["s3:GetObject", "s3:PutObject"],', '    Resource = "${aws_s3_bucket.records.arn}/*"'],
+    why: 'Role limited to the objects of one bucket instead of every S3 action everywhere.',
+  },
+  {
+    id: 's3',
+    title: 'No public access block',
+    resource: 'aws_s3_bucket.records',
+    severity: 'Medium',
+    breaksPath: false,
+    at: 'main.tf:36',
+    minus: [],
+    plus: [
+      'resource "aws_s3_bucket_public_access_block" "records" {',
+      '  bucket                  = aws_s3_bucket.records.id',
+      '  block_public_acls       = true',
+      '  block_public_policy     = true',
+      '  ignore_public_acls      = true',
+      '  restrict_public_buckets = true',
+      '}',
+    ],
+    why: 'The bucket can no longer be made public by a later change.',
+  },
+]
+
+export const aiContract = [
+  { k: 'AI receives', v: 'main.tf + chosen findings with line evidence' },
+  { k: 'AI returns', v: 'a patched main.tf + one reason per change' },
+  { k: 'Never', v: 'AWS credentials · changes to AWS · terraform apply' },
+]
+
+export const fixMeasures = ['findings resolved on re-scan', 'new findings introduced', 'patches passing terraform validate']

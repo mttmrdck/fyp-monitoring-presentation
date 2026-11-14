@@ -4,6 +4,7 @@ import { S1Title, S2Intro } from './Intro'
 import { S3Problem, S4Objectives } from './Problem'
 import { S5Literature } from './Literature'
 import { S6Concept } from './Concept'
+import { S7Remediation } from './Remediation'
 import { S7Stakeholders, S8Summary } from './Closing'
 import { sources } from '../content/sources'
 import { pathNodes } from '../content/content'
@@ -24,6 +25,7 @@ export const slides: SlideDef[] = [
   { id: 'objectives', title: 'Objectives', criterion: 'Objectives', steps: 3, Component: S4Objectives },
   { id: 'literature', title: 'Literature review', criterion: 'Literature review', steps: sources.length - 1, Component: S5Literature },
   { id: 'concept', title: 'Proposed concept', criterion: 'Introduction · Literature', steps: pathNodes.length, Component: S6Concept },
+  { id: 'remediation', title: 'AI-assisted remediation', criterion: 'Proposed concept · O3', steps: 3, Component: S7Remediation },
   { id: 'stakeholders', title: 'Stakeholder collaboration', criterion: 'Stakeholder collaboration', Component: S7Stakeholders },
   { id: 'summary', title: 'Summary & questions', criterion: 'All six', Component: S8Summary },
 ]

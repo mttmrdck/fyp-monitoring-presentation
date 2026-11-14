@@ -14,11 +14,11 @@ web
 
 ## Product Purpose
 
-An 8-slide FYP monitoring presentation (maximum 8, covering only the lecturer's six criteria: project title, introduction, objectives, problem statement, literature review, stakeholder collaboration initiative) for an undergraduate Computer Science FYP: *Explainable and Context-Aware AWS Cloud Misconfiguration and Attack-Path Risk Analyzer — A Terraform-Based Pre-Deployment Analysis with Optional Read-Only AWS Validation* (short label: Cloud Risk Analyzer). Two deliverables share one content source: an interactive website (progressive reveals allowed) and a 16:9 PDF where everything is visible. Success: the lecturer understands the project from the visuals, not from paragraphs.
+A 9-slide FYP monitoring presentation (originally capped at 8; the presenter approved a 9th slide for AI-assisted remediation in Nov 2026), covering the lecturer's six criteria ( project title, introduction, objectives, problem statement, literature review, stakeholder collaboration initiative) for an undergraduate Computer Science FYP: *Explainable and Context-Aware AWS Cloud Misconfiguration and Attack-Path Risk Analyzer — A Terraform-Based Pre-Deployment Analysis with Optional Read-Only AWS Validation* (short label: Cloud Risk Analyzer). Two deliverables share one content source: an interactive website (progressive reveals allowed) and a 16:9 PDF where everything is visible. Success: the lecturer understands the project from the visuals, not from paragraphs.
 
 ## Positioning
 
-The analyzer is a focused combination, not a new detection technology: ~10 rule-based checks on Terraform (S3, IAM, EC2 Security Groups), explicit resource/identity/permission relationship modelling, 1–2 predefined evidence-supported potential attack paths, evidence-linked explanations, contextual prioritisation, CLI + HTML report, and an optional, separate, read-only Boto3 validation path. It analyses before deployment; it is not runtime monitoring.
+The analyzer is a focused combination, not a new detection technology: ~10 rule-based checks on Terraform (S3, IAM, EC2 Security Groups), explicit resource/identity/permission relationship modelling, 1–2 predefined evidence-supported potential attack paths, evidence-linked explanations, contextual prioritisation, CLI + HTML report, an optional, separate, read-only Boto3 validation path, and a planned AI-assisted fix: the user picks findings, an LLM proposes a Terraform patch, the user approves a diff, and the same rules re-scan it. The tool never runs `terraform apply` or touches AWS. It analyses before deployment; it is not runtime monitoring.
 
 ## Operating Context
 

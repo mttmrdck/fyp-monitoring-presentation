@@ -39,7 +39,7 @@ export const sources: Source[] = [
     alt: 'First page of Movva et al. (2025), International Journal of Computer Security',
     what: 'Evaluates LLM-based IaC security scanning and drift detection against rule-based tools (Checkov, tfsec).',
     relevant: 'Reports 31% higher detection of context-dependent misconfigurations in its own evaluation: context matters.',
-    differs: 'This project uses explicit relationship modelling, not LLMs, and does not generalise the 31% figure.',
+    differs: 'Detection here uses explicit rules and relationships; an LLM only suggests fixes. The 31% figure is not generalised.',
   },
   {
     id: 'keerthana',
@@ -52,7 +52,7 @@ export const sources: Source[] = [
     alt: 'First page of Keerthana (2026), IJEAST',
     what: 'Exploratory comparison of Checkov with an LLM reviewer on 12 Terraform files.',
     relevant: 'Contrasts deterministic checks with contextual explanation and suggested fixes.',
-    differs: 'Exploratory and dataset-specific; this project adds an evaluation on labelled scenarios.',
+    differs: 'Exploratory, 12 files. Here, AI fixes are re-scanned by the rules and evaluated on labelled scenarios.',
   },
   {
     id: 'almarri',
