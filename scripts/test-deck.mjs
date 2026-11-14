@@ -146,7 +146,7 @@ try {
   /* Stakeholders honesty */
   await go(8)
   ok('stakeholders: Lejiend Community leads as collaborator', (await active('.collab-name').innerText()).includes('Lejiend Community') && (await active('.collab-status').innerText()).toLowerCase().includes('confirmed'))
-  ok('stakeholders: Farhan Helmy marked contacted', (await active('.other--contacted').innerText()).includes('Farhan Helmy'))
+  ok('stakeholders: Farhan Helmy credited for the AI fix idea', (await active('.other', { hasText: 'Farhan Helmy' }).innerText()).includes('Suggested the AI-assisted remediation'))
   ok('stakeholders: Lejiend owner LinkedIn linked', (await active('.collab-links a[href="https://www.linkedin.com/in/lejiend/"]').count()) === 1)
 
   /* Links + PDF button */

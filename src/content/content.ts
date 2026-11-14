@@ -249,7 +249,7 @@ export const collaborator = {
   improves: 'Scenarios and explanations shaped by people who use cloud infrastructure, not only by the author.',
 }
 
-export const stakeholders: { who: string; role: string; seek: string; status: Status; statusText: string; links?: { label: string; href: string }[] }[] = [
+export const stakeholders: { who: string; role: string; seek: string; gave?: string; status: Status; statusText: string; links?: { label: string; href: string }[] }[] = [
   {
     who: 'Dr. Fairuz Amalina Narudin',
     role: 'FYP supervisor · academic guidance',
@@ -260,9 +260,10 @@ export const stakeholders: { who: string; role: string; seek: string; status: St
   {
     who: 'Farhan Helmy',
     role: 'AI & full-stack engineer (as described on his site)',
-    seek: 'Technical feedback on the analyzer and its report',
-    status: 'contacted',
-    statusText: 'Contacted',
+    gave: 'Suggested the AI-assisted remediation feature (slide 7)',
+    seek: 'Feedback on the AI fix workflow and the report',
+    status: 'confirmed',
+    statusText: 'Responded · gave input',
     links: [
       { label: 'farhanhelmy.com', href: 'https://farhanhelmy.com' },
       { label: 'LinkedIn', href: 'https://www.linkedin.com/in/muhammad-farhan-helmy/' },

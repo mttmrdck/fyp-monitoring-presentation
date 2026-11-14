@@ -50,6 +50,11 @@ export function S7Stakeholders() {
                   {x.who}
                 </h3>
                 <p className="other-role">{x.role}</p>
+                {x.gave ? (
+                  <p className="other-seek">
+                    <b>Input given</b> {x.gave}
+                  </p>
+                ) : null}
                 <p className="other-seek">
                   <b>Input sought</b> {x.seek}
                 </p>
